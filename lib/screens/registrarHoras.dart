@@ -17,6 +17,10 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
   String? horasHoje;
   List<String> listaHoras = [];
   Map<String, List> mapaDatas = {};
+  String aberturaString = "";
+  String fechamentoString = "";
+  int abertura = 0;
+  int fechamento = 0;
 
   @override
   void initState() {
@@ -39,8 +43,7 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
 
   contarHorasTrabalhadas(List? lista) {
     int horasTrabalhadas = 0;
-    int abertura = 0;
-    int fechamento = 0;
+
     // converter horas em minutos e fazer o cálculo
     if (lista != null) {
       for (int i = 0; i < lista.length; i++) {
@@ -50,11 +53,15 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
         int minuto = int.parse(listaHoras[1]);
 
         // se o horário é abertura, adicionar.
-        if (i % 2 == 0) abertura = hora * 60 + minuto;
+        if (i % 2 == 0) {
+          abertura = hora * 60 + minuto;
+          aberturaString = converterInteiroEmValorHora(abertura);
+        }
         // se o horário é fechamento
         if (i % 2 == 1) {
           fechamento = hora * 60 + minuto;
           horasTrabalhadas += fechamento - abertura;
+          fechamentoString = converterInteiroEmValorHora(fechamento);
         }
       }
     }
@@ -84,37 +91,53 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
 
     return Scaffold(
       appBar: const MyAppBar(titulo: "BANCO DE HORAS"),
-      body: Center(
+      body: Padding(
+        padding: const EdgeInsets.all(8),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
             Row(
-              mainAxisAlignment: MainAxisAlignment.end,
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text("HORAS HOJE: "),
-                Text(horasHoje ?? " - "),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text("ULTIMO TURNO ABERTO: $aberturaString"),
+                    Text("ULTIMO TURNO FECHADO: $fechamentoString"),
+                  ],
+                ),
+                Text("HORAS HOJE: ${horasHoje ?? "-"}"),
               ],
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                DatePickerDialog(
-                  firstDate: DateTime.now(),
-                  lastDate: DateTime(2200),
-                ),
-                ElevatedButton(
-                  onPressed: () => selectTime(context),
-                  child: Text(
-                    hora != null
-                        ? 'Hora Selecionada: ${hora!.format(context)}'
-                        : 'Nenhuma hora selecionada',
+            SizedBox(
+              height: 400,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  DatePickerDialog(
+                    initialDate: DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime(2200),
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: () => registrarHora(),
-                  child: const Text("Registrar Hora"),
-                ),
-              ],
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.spaceAround,
+                    mainAxisSize: MainAxisSize.max,
+                    children: [
+                      ElevatedButton(
+                        onPressed: () => selectTime(context),
+                        child: Text(
+                          hora != null
+                              ? 'Hora Selecionada: ${hora!.format(context)}'
+                              : 'Nenhuma hora selecionada',
+                        ),
+                      ),
+                      ElevatedButton(
+                        onPressed: () => registrarHora(),
+                        child: const Text("Registrar Hora"),
+                      ),
+                    ],
+                  ),
+                ],
+              ),
             )
           ],
         ),
