@@ -1,9 +1,8 @@
 import 'dart:io';
-import 'package:path_provider/path_provider.dart';
 
 Future<String> getPath() async {
-  final diretorio = await getApplicationDocumentsDirectory();
-  final bancoDiretorio = Directory("${diretorio.path}/banco horas");
+  final String appDataPath = Platform.environment['APPDATA']!;
+  final bancoDiretorio = Directory("$appDataPath/banco horas");
 
   if (!await bancoDiretorio.exists()) {
     await bancoDiretorio.create(recursive: true);
