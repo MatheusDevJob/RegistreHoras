@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:matheus/services/banco.dart';
+import 'package:matheus/services/helper.dart';
 import 'package:matheus/services/reformatarDados.dart';
 import 'package:matheus/widgets/myAppBar.dart';
 
@@ -72,6 +73,10 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
   @override
   Widget build(BuildContext context) {
     void registrarHora() async {
+      if (hora == null) {
+        alertDialog(context, "Selecione um horário.", corCaixa: Colors.red);
+        return;
+      }
       String dataFormatada = DateFormat('dd/MM/yyyy').format(data);
       String horaFormatada = formatarHora(hora!);
       await registrar(dataFormatada, horaFormatada);
