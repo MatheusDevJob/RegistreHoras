@@ -38,26 +38,44 @@ Future<Database?> iniciarBanco() async {
   try {
     // Init ffi loader if needed.
     sqfliteFfiInit();
-
-    var databaseFactory = databaseFactoryFfi;
-
     String caminho = await getPath();
-
+    databaseFactory = databaseFactoryFfi;
     //Create path for database
     String dbPath = p.join(caminho, "databases", "registroHoras.db");
-    Database db = await databaseFactory.openDatabase(dbPath);
-    return db;
-    //   await db.execute('''
-    //       CREATE TABLE Product (
-    //           id INTEGER PRIMARY KEY,
-    //           title TEXT
-    //       )
-    // ''');
-    //   await db.insert('Product', <String, Object?>{'title': 'Product 1'});
 
-    //   var result = await db.query('Product');
-    //   print(result);
-    //   // prints [{id: 1, title: Product 1}, {id: 2, title: Product 1}]
+    // Verificar se o diretório existe, se não, criar o diretório
+    if (!await Directory(p.dirname(dbPath)).exists()) {
+      await Directory(p.dirname(dbPath)).create(recursive: true);
+    }
+    Database db = await databaseFactory.openDatabase(dbPath);
+    // Verificar se a tabela 'projetos' existe
+    await db.execute('''
+          CREATE TABLE IF NOT EXISTS projetos (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            projetoNome TEXT NOT NULL UNIQUE,
+            data_hora TEXT NOT NULL
+          );
+        ''');
+
+    // Verificar se a tabela 'clientes' existe
+    await db.execute('''
+          CREATE TABLE IF NOT EXISTS clientes (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            clienteNome TEXT NOT NULL UNIQUE,
+            data_hora TEXT NOT NULL
+          );
+        ''');
+
+    // Verificar se a tabela 'tarefas' existe
+    await db.execute('''
+          CREATE TABLE IF NOT EXISTS tarefas (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            tarefaNome TEXT NOT NULL,
+            data_hora TEXT NOT NULL
+          );
+        ''');
+
+    return db;
   } catch (e) {
     return null;
   }

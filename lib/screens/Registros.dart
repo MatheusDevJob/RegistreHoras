@@ -71,6 +71,7 @@ class _RegistrosState extends State<Registros> {
       body: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
+          // TABELA PARA LISTAR E APAGAR REGISTRO
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: SingleChildScrollView(
@@ -99,7 +100,7 @@ class _RegistrosState extends State<Registros> {
                               .then((bool bul) {
                             if (bul) setState(() {});
                           }),
-                          child: const Icon(Icons.check),
+                          child: const Icon(Icons.close),
                         )),
                       ]);
                     }).toList(),
