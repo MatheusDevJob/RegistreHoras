@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:intl/intl.dart';
 
 void alerteToast(
   BuildContext context,
@@ -29,4 +30,13 @@ void alertDialog(
     backgroundColor: corCaixa,
     duration: Duration(seconds: duracao),
   ));
+}
+
+String getDataHora() {
+  DateTime now = DateTime.now();
+
+  // Formatação de data no padrão de dois dígitos para dia e mês
+  String formattedDate = DateFormat('yyyy-MM-dd').format(now);
+  String formattedTime = DateFormat('HH:mm:ss').format(now);
+  return '$formattedDate $formattedTime';
 }

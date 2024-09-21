@@ -1,4 +1,7 @@
 import 'dart:io';
+import 'package:matheus/services/helper.dart';
+import 'package:path/path.dart' as p;
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 Future<String> getPath() async {
   final String appDataPath = Platform.environment['APPDATA']!;
@@ -28,5 +31,87 @@ Future<String> buscar() async {
     return await file.readAsString();
   } catch (e) {
     return '';
+  }
+}
+
+Future<Database?> iniciarBanco() async {
+  try {
+    // Init ffi loader if needed.
+    sqfliteFfiInit();
+
+    var databaseFactory = databaseFactoryFfi;
+
+    String caminho = await getPath();
+
+    //Create path for database
+    String dbPath = p.join(caminho, "databases", "registroHoras.db");
+    Database db = await databaseFactory.openDatabase(dbPath);
+    return db;
+    //   await db.execute('''
+    //       CREATE TABLE Product (
+    //           id INTEGER PRIMARY KEY,
+    //           title TEXT
+    //       )
+    // ''');
+    //   await db.insert('Product', <String, Object?>{'title': 'Product 1'});
+
+    //   var result = await db.query('Product');
+    //   print(result);
+    //   // prints [{id: 1, title: Product 1}, {id: 2, title: Product 1}]
+  } catch (e) {
+    return null;
+  }
+}
+
+void fecharBanco(Database db) async => await db.close();
+
+Future<bool> registrarProjeto(String projetoName) async {
+  Database? db = await iniciarBanco();
+  if (db == null) return false;
+
+  try {
+    Map<String, String> dados = {
+      'projetoNome': projetoName,
+      'data_hora': getDataHora(),
+    };
+    await db.insert('projetos', dados);
+    await db.close();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+Future<bool> registrarCliente(String projetoCliente) async {
+  Database? db = await iniciarBanco();
+  if (db == null) return false;
+
+  try {
+    Map<String, String> dados = {
+      'clienteNome': projetoCliente,
+      'data_hora': getDataHora(),
+    };
+    await db.insert('clientes', dados);
+    await db.close();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+Future<bool> registrarTarefa(String tarefaNome) async {
+  Database? db = await iniciarBanco();
+  if (db == null) return false;
+
+  try {
+    Map<String, String> dados = {
+      'tarefaNome': tarefaNome,
+      'data_hora': getDataHora(),
+    };
+    await db.insert('tarefas', dados);
+    await db.close();
+    return true;
+  } catch (e) {
+    return false;
   }
 }

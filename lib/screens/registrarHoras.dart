@@ -4,6 +4,7 @@ import 'package:matheus/services/banco.dart';
 import 'package:matheus/services/helper.dart';
 import 'package:matheus/services/reformatarDados.dart';
 import 'package:matheus/widgets/myAppBar.dart';
+import 'package:matheus/widgets/myDrawer.dart';
 
 class RegistrarHoras extends StatefulWidget {
   const RegistrarHoras({super.key});
@@ -96,6 +97,7 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
 
     return Scaffold(
       appBar: const MyAppBar(titulo: "BANCO DE HORAS"),
+      drawer: const MyDrawer(),
       body: Padding(
         padding: const EdgeInsets.all(8),
         child: Column(
