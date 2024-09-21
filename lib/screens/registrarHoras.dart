@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:matheus/services/banco.dart';
 import 'package:matheus/services/helper.dart';
 import 'package:matheus/services/reformatarDados.dart';
+import 'package:matheus/widgets/FutureDrop.dart';
 import 'package:matheus/widgets/myAppBar.dart';
 import 'package:matheus/widgets/myDrawer.dart';
 
@@ -23,6 +24,9 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
   String fechamentoString = "";
   int abertura = 0;
   int fechamento = 0;
+  String? projetoID;
+  String? clienteID;
+  String? tarefaID;
 
   @override
   void initState() {
@@ -95,6 +99,10 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
       }
     }
 
+    void selecionarProjeto(String idProjeto) => projetoID = idProjeto;
+    void selecionarCliente(String idCliente) => clienteID = idCliente;
+    void selecionarTarefa(String idTarefa) => tarefaID = idTarefa;
+
     return Scaffold(
       appBar: const MyAppBar(titulo: "BANCO DE HORAS"),
       drawer: const MyDrawer(),
@@ -102,6 +110,39 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
         padding: const EdgeInsets.all(8),
         child: Column(
           children: <Widget>[
+            const Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                Text("Projetos:", style: TextStyle(fontSize: 18)),
+                Text("Cliente:", style: TextStyle(fontSize: 18)),
+                Text("Tarefas:", style: TextStyle(fontSize: 18)),
+              ],
+            ),
+            Row(children: [
+              Expanded(
+                child: FutureDrop(
+                  onChange: selecionarProjeto,
+                  tabelaBusca: "projetos",
+                  nomeColuna: "projetoNome",
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FutureDrop(
+                  onChange: selecionarCliente,
+                  tabelaBusca: "clientes",
+                  nomeColuna: "clienteNome",
+                ),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: FutureDrop(
+                  onChange: selecionarTarefa,
+                  tabelaBusca: "tarefas",
+                  nomeColuna: "tarefaNome",
+                ),
+              ),
+            ]),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
