@@ -82,6 +82,19 @@ Future<bool> registrarProjeto(String projetoName) async {
   }
 }
 
+Future<bool> apagarProjeto(String id) async {
+  Database? db = await iniciarBanco();
+  if (db == null) return false;
+
+  try {
+    await db.delete('projetos', where: "id = ?", whereArgs: [id]);
+    await db.close();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
 Future<bool> registrarCliente(String projetoCliente) async {
   Database? db = await iniciarBanco();
   if (db == null) return false;
@@ -92,6 +105,19 @@ Future<bool> registrarCliente(String projetoCliente) async {
       'data_hora': getDataHora(),
     };
     await db.insert('clientes', dados);
+    await db.close();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+Future<bool> apagarCliente(String id) async {
+  Database? db = await iniciarBanco();
+  if (db == null) return false;
+
+  try {
+    await db.delete('clientes', where: "id = ?", whereArgs: [id]);
     await db.close();
     return true;
   } catch (e) {
@@ -113,5 +139,32 @@ Future<bool> registrarTarefa(String tarefaNome) async {
     return true;
   } catch (e) {
     return false;
+  }
+}
+
+Future<bool> apagarTarefa(String id) async {
+  Database? db = await iniciarBanco();
+  if (db == null) return false;
+
+  try {
+    await db.delete('tarefas', where: "id = ?", whereArgs: [id]);
+    await db.close();
+    return true;
+  } catch (e) {
+    return false;
+  }
+}
+
+Future<List<Map<String, dynamic>>> getDadosTabela(String nomeTabela) async {
+  Database? db = await iniciarBanco();
+  if (db == null) return [];
+  try {
+    List<Map<String, dynamic>> retorno = await db.query(nomeTabela);
+    // await db.close();
+    return retorno;
+  } catch (e) {
+    return [
+      {"erro": e.toString()}
+    ];
   }
 }
