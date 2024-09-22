@@ -75,6 +75,24 @@ Future<Database?> iniciarBanco() async {
           );
         ''');
 
+    await db.execute('''
+          CREATE TABLE IF NOT EXISTS
+            registros (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                projetoID INTEGER NOT NULL,
+                clienteID INTEGER NOT NULL,
+                tarefaID INTEGER NOT NULL,
+                data_hora_inicio TEXT NOT NULL,
+                data_hora_fim TEXT,
+                descricao_tarefa TEXT,
+                valor_hora REAL NOT NULL,
+                horas_trabalhadas REAL NOT NULL,
+                FOREIGN KEY (projetoID) REFERENCES projetos (id),
+                FOREIGN KEY (clienteID) REFERENCES clientes (id),
+                FOREIGN KEY (tarefaID) REFERENCES tarefas (id)
+            );
+        ''');
+
     return db;
   } catch (e) {
     return null;
