@@ -54,6 +54,12 @@ class _FutureDropState extends State<FutureDrop> {
               funcaoOnChange(newValue);
             });
           },
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return "Informe o registro.";
+            }
+            return null;
+          },
           items:
               data.map<DropdownMenuItem<String>>((Map<String, dynamic> item) {
             return DropdownMenuItem<String>(
