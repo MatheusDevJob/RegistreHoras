@@ -22,6 +22,7 @@ class PegarData extends StatefulWidget {
     DateTime? initialDate,
     required DateTime firstDate,
     required DateTime lastDate,
+    required this.retornarValor,
     DateTime? currentDate,
     this.initialEntryMode = DatePickerEntryMode.calendar,
     this.selectableDayPredicate,
@@ -99,6 +100,7 @@ class PegarData extends StatefulWidget {
       habilitar ou desabilitar botões de cancelar e confirmar "Cancel" e "OK"
   */
   final bool botoes;
+  final Function retornarValor;
 
   /// The text that is displayed at the top of the header.
   ///
@@ -237,9 +239,8 @@ class _PegarDataState extends State<PegarData> with RestorationMixin {
   }
 
   void _handleDateChanged(DateTime date) {
-    setState(() {
-      _selectedDate.value = date;
-    });
+    setState(() => _selectedDate.value = date);
+    widget.retornarValor(date);
   }
 
   Size _dialogSize(BuildContext context) {

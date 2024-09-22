@@ -2286,6 +2286,7 @@ class PegarHora extends StatefulWidget {
   const PegarHora({
     super.key,
     required this.initialTime,
+    required this.retornarTime,
     this.cancelText,
     this.confirmText,
     this.helpText,
@@ -2319,6 +2320,7 @@ class PegarHora extends StatefulWidget {
   */
 
   final bool botoes;
+  final Function retornarTime;
 
   /// Optionally provide your own help text to the header of the time picker.
   final String? helpText;
@@ -2369,8 +2371,7 @@ class PegarHora extends StatefulWidget {
   State<PegarHora> createState() => _PegarHoraState();
 }
 
-class _PegarHoraState extends State<PegarHora>
-    with RestorationMixin {
+class _PegarHoraState extends State<PegarHora> with RestorationMixin {
   late final RestorableEnum<TimePickerEntryMode> _entryMode =
       RestorableEnum<TimePickerEntryMode>(widget.initialEntryMode,
           values: TimePickerEntryMode.values);
@@ -2421,6 +2422,7 @@ class _PegarHoraState extends State<PegarHora>
       setState(() {
         _selectedTime.value = value;
       });
+      widget.retornarTime(value);
     }
   }
 
@@ -3214,53 +3216,6 @@ class _TimePickerState extends State<_TimePicker> with RestorationMixin {
 ///   typography, and shape of the time picker.
 /// * [DisplayFeatureSubScreen], which documents the specifics of how
 ///   [DisplayFeature]s can split the screen into sub-screens.
-Future<TimeOfDay?> showTimePicker({
-  required BuildContext context,
-  required TimeOfDay initialTime,
-  TransitionBuilder? builder,
-  bool barrierDismissible = true,
-  Color? barrierColor,
-  String? barrierLabel,
-  bool useRootNavigator = true,
-  TimePickerEntryMode initialEntryMode = TimePickerEntryMode.dial,
-  String? cancelText,
-  String? confirmText,
-  String? helpText,
-  String? errorInvalidText,
-  String? hourLabelText,
-  String? minuteLabelText,
-  RouteSettings? routeSettings,
-  EntryModeChangeCallback? onEntryModeChanged,
-  Offset? anchorPoint,
-  Orientation? orientation,
-}) async {
-  assert(debugCheckHasMaterialLocalizations(context));
-
-  final Widget dialog = PegarHora(
-    initialTime: initialTime,
-    initialEntryMode: initialEntryMode,
-    cancelText: cancelText,
-    confirmText: confirmText,
-    helpText: helpText,
-    errorInvalidText: errorInvalidText,
-    hourLabelText: hourLabelText,
-    minuteLabelText: minuteLabelText,
-    orientation: orientation,
-    onEntryModeChanged: onEntryModeChanged,
-  );
-  return showDialog<TimeOfDay>(
-    context: context,
-    barrierDismissible: barrierDismissible,
-    barrierColor: barrierColor,
-    barrierLabel: barrierLabel,
-    useRootNavigator: useRootNavigator,
-    builder: (BuildContext context) {
-      return builder == null ? dialog : builder(context, dialog);
-    },
-    routeSettings: routeSettings,
-    anchorPoint: anchorPoint,
-  );
-}
 
 void _announceToAccessibility(BuildContext context, String message) {
   SemanticsService.announce(message, Directionality.of(context));
