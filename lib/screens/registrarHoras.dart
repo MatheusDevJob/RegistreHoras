@@ -44,6 +44,13 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
     super.initState();
   }
 
+  @override
+  void dispose() {
+    registroC.dispose();
+    valorHoraC.dispose();
+    super.dispose();
+  }
+
   void calcularHorasTrabalhadasHoje() {
     DateTime data = DateTime.now();
     String dataHoje = DateFormat('dd/MM/yyyy').format(data);

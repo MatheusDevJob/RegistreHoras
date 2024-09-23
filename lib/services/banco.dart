@@ -219,7 +219,7 @@ Future<int> registrarAtividade(
 
   try {
     Map<String, String> dados = {
-      'projetoID': "projetoID",
+      'projetoID': projetoID,
       'clienteID': clienteID,
       'tarefaID': tarefaID,
       'data_hora_inicio': dataHoraInicio,
@@ -232,5 +232,22 @@ Future<int> registrarAtividade(
     return 1;
   } catch (e) {
     return 2;
+  }
+}
+
+Future<List<Map<String, dynamic>>> getAtividadeAberta(String nomeTabela) async {
+  Database? db = await iniciarBanco();
+  if (db == null) return [];
+  try {
+    List<Map<String, dynamic>> retorno = await db.query(
+      "registros",
+      where: "data_hora_fim = NULL",
+    );
+    await db.close();
+    return retorno;
+  } catch (e) {
+    return [
+      {"erro": e.toString()}
+    ];
   }
 }
