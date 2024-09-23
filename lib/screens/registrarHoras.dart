@@ -12,7 +12,13 @@ import 'package:matheus/widgets/myAppBar.dart';
 import 'package:matheus/widgets/myDrawer.dart';
 
 class RegistrarHoras extends StatefulWidget {
-  const RegistrarHoras({super.key});
+  final bool atividadeAberta;
+  final Map<String, dynamic>? mapaAtividade;
+  const RegistrarHoras({
+    super.key,
+    this.atividadeAberta = false,
+    this.mapaAtividade,
+  });
 
   @override
   State<RegistrarHoras> createState() => _RegistrarHorasState();
@@ -36,11 +42,19 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
   String? clienteID;
   String? tarefaID;
 
+  late bool atividadeAberta;
+  late Map<String, dynamic>? mapaAtividade;
   @override
   void initState() {
     DateTime data = DateTime.now();
     horasHoje = DateFormat("HH:mm").format(data);
     dataString = DateFormat("yyyy-MM-dd").format(data);
+    atividadeAberta = widget.atividadeAberta;
+    mapaAtividade = widget.mapaAtividade;
+    if (atividadeAberta) {
+      registroC.text = mapaAtividade!["descricao_tarefa"];
+      valorHoraC.text = mapaAtividade!["valor_hora"].toString();
+    }
     super.initState();
   }
 
@@ -120,17 +134,22 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
     void selecionarProjeto(String idProjeto) => projetoID = idProjeto;
     void selecionarCliente(String idCliente) => clienteID = idCliente;
     void selecionarTarefa(String idTarefa) => tarefaID = idTarefa;
+    void atualizarAtividade() {}
 
     return Scaffold(
       appBar: const MyAppBar(titulo: "REGISTRAR ATIVIDADE"),
       drawer: const MyDrawer(),
       floatingActionButton: ElevatedButton(
         onPressed: () {
-          if (formKey.currentState!.validate()) {
+          if (atividadeAberta) {
+            atualizarAtividade();
+          } else if (formKey.currentState!.validate()) {
             registrarHora();
           }
         },
-        child: const Text("REGISTRAR ATIVIDADE"),
+        child: atividadeAberta
+            ? const Text("ATUALIZAR ATIVIDADE")
+            : const Text("REGISTRAR ATIVIDADE"),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -147,37 +166,88 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
                     Text("Tarefas:", style: TextStyle(fontSize: 18)),
                   ],
                 ),
-                Row(children: [
-                  Expanded(
-                    child: FutureDrop(
-                      onChange: selecionarProjeto,
-                      tabelaBusca: "projetos",
-                      nomeColuna: "projetoNome",
+                if (atividadeAberta) ...[
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black, width: 0.5),
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 11.0),
+                          child: Text(
+                            mapaAtividade!["projetoNome"],
+                            style: const TextStyle(fontSize: 16.0),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black, width: 0.5),
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 11.0),
+                          child: Text(
+                            mapaAtividade!["clienteNome"],
+                            style: const TextStyle(fontSize: 16.0),
+                          ),
+                        ),
+                      ),
+                      const SizedBox(width: 10),
+                      Expanded(
+                        child: Container(
+                          decoration: BoxDecoration(
+                            border: Border.all(color: Colors.black, width: 0.5),
+                            borderRadius: BorderRadius.circular(5.0),
+                          ),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0, vertical: 11.0),
+                          child: Text(
+                            mapaAtividade!["tarefaNome"],
+                            style: const TextStyle(fontSize: 16.0),
+                          ),
+                        ),
+                      ),
+                    ],
+                  )
+                ] else
+                  Row(children: [
+                    Expanded(
+                      child: FutureDrop(
+                        onChange: selecionarProjeto,
+                        tabelaBusca: "projetos",
+                        nomeColuna: "projetoNome",
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: FutureDrop(
-                      onChange: selecionarCliente,
-                      tabelaBusca: "clientes",
-                      nomeColuna: "clienteNome",
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: FutureDrop(
+                        onChange: selecionarCliente,
+                        tabelaBusca: "clientes",
+                        nomeColuna: "clienteNome",
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Expanded(
-                    child: FutureDrop(
-                      onChange: selecionarTarefa,
-                      tabelaBusca: "tarefas",
-                      nomeColuna: "tarefaNome",
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: FutureDrop(
+                        onChange: selecionarTarefa,
+                        tabelaBusca: "tarefas",
+                        nomeColuna: "tarefaNome",
+                      ),
                     ),
-                  ),
-                ]),
+                  ]),
                 const SizedBox(height: 10),
                 Row(
                   children: [
                     Expanded(
                       child: TextFormField(
                         controller: registroC,
+                        readOnly: atividadeAberta,
                         autofocus: true,
                         decoration: const InputDecoration(
                           label: Text("Descrição"),
@@ -197,6 +267,7 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
                       width: 200,
                       child: TextFormField(
                         controller: valorHoraC,
+                        readOnly: atividadeAberta,
                         inputFormatters: [
                           // utilizar regexp para permitir apenas números
                           // e até 2 dígitos após casa decimal

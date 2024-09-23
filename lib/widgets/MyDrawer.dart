@@ -14,6 +14,20 @@ class MyDrawer extends StatefulWidget {
 class _MyDrawerState extends State<MyDrawer> {
   @override
   Widget build(BuildContext context) {
+    void navegarRegistro(List registro) {
+      bool atividadeAberta = registro.isNotEmpty ? true : false;
+      Navigator.pushAndRemoveUntil(
+        context,
+        MaterialPageRoute(
+          builder: (context) => RegistrarHoras(
+            atividadeAberta: atividadeAberta,
+            mapaAtividade: registro[0],
+          ),
+        ),
+        ModalRoute.withName('/'),
+      );
+    }
+
     return Drawer(
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.only(
@@ -33,11 +47,7 @@ class _MyDrawerState extends State<MyDrawer> {
           ),
           ListTile(
             title: const Text("Registrar Atividade"),
-            onTap: () => Navigator.pushAndRemoveUntil(
-              context,
-              MaterialPageRoute(builder: (context) => const RegistrarHoras()),
-              ModalRoute.withName('/'),
-            ),
+            onTap: () async => navegarRegistro(await getAtividadeAberta()),
           ),
           ListTile(
             title: const Text("Cadastrar Projeto"),

@@ -239,10 +239,21 @@ Future<List<Map<String, dynamic>>> getAtividadeAberta() async {
   Database? db = await iniciarBanco();
   if (db == null) return [];
   try {
-    List<Map<String, dynamic>> retorno = await db.query(
-      "registros",
-      where: "data_hora_fim = NULL",
-    );
+    List<Map<String, dynamic>> retorno = await db.rawQuery('''
+      SELECT 
+        r.id,
+        r.data_hora_inicio,
+        r.descricao_tarefa,
+        r.valor_hora,
+        p.projetoNome,
+        c.clienteNome, 
+        t.tarefaNome
+      FROM registros r
+      JOIN projetos p ON p.id = r.projetoID
+      JOIN clientes c ON c.id = r.clienteID
+      JOIN tarefas t ON t.id = r.tarefaID
+      WHERE r.data_hora_fim IS NULL
+      ''');
     await db.close();
     return retorno;
   } catch (e) {
