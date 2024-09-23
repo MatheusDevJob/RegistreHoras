@@ -69,7 +69,7 @@ class _RegistrosState extends State<Registros> {
       appBar: MyAppBar(titulo: nomeTitulo),
       drawer: const MyDrawer(),
       body: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
           // TABELA PARA LISTAR E APAGAR REGISTRO
           SingleChildScrollView(
@@ -88,6 +88,10 @@ class _RegistrosState extends State<Registros> {
                   }
                   List<Map<String, dynamic>> data = snapshot.data!;
                   return DataTable(
+                    border: TableBorder.all(
+                      borderRadius: BorderRadius.circular(5),
+                      color: Colors.grey,
+                    ),
                     columns: const [
                       DataColumn(label: Text('Nome')),
                       DataColumn(label: Text('Ação')),
