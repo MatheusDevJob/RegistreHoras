@@ -235,7 +235,7 @@ Future<int> registrarAtividade(
   }
 }
 
-Future<List<Map<String, dynamic>>> getAtividadeAberta(String nomeTabela) async {
+Future<List<Map<String, dynamic>>> getAtividadeAberta() async {
   Database? db = await iniciarBanco();
   if (db == null) return [];
   try {
