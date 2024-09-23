@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:matheus/screens/Home.dart';
 import 'package:matheus/screens/Registros.dart';
 import 'package:matheus/screens/registrarHoras.dart';
 import 'package:matheus/services/banco.dart';
@@ -24,6 +25,14 @@ class _MyDrawerState extends State<MyDrawer> {
         children: [
           ListTile(
             title: const Text("Home"),
+            onTap: () => Navigator.pushAndRemoveUntil(
+              context,
+              MaterialPageRoute(builder: (context) => const Home()),
+              ModalRoute.withName('/'),
+            ),
+          ),
+          ListTile(
+            title: const Text("Registrar Atividade"),
             onTap: () => Navigator.pushAndRemoveUntil(
               context,
               MaterialPageRoute(builder: (context) => const RegistrarHoras()),

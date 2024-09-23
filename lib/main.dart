@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:matheus/screens/registrarHoras.dart';
+import 'package:matheus/screens/Home.dart';
 
 void main() {
   runApp(const MyApp());
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
         useMaterial3: true,
       ),
       debugShowCheckedModeBanner: false,
-      home: const RegistrarHoras(),
+      home: const Home(),
     );
   }
 }

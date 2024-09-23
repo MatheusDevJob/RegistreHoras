@@ -86,7 +86,8 @@ Future<Database?> iniciarBanco() async {
                 data_hora_fim TEXT,
                 descricao_tarefa TEXT,
                 valor_hora REAL NOT NULL,
-                horas_trabalhadas REAL NOT NULL,
+                horas_trabalhadas REAL,
+                valor_receber INTEGER,
                 FOREIGN KEY (projetoID) REFERENCES projetos (id),
                 FOREIGN KEY (clienteID) REFERENCES clientes (id),
                 FOREIGN KEY (tarefaID) REFERENCES tarefas (id)
@@ -202,5 +203,34 @@ Future<List<Map<String, dynamic>>> getDadosTabela(String nomeTabela) async {
     return [
       {"erro": e.toString()}
     ];
+  }
+}
+
+Future<int> registrarAtividade(
+  String projetoID,
+  String clienteID,
+  String tarefaID,
+  String dataHoraInicio,
+  String descricaoTarefa,
+  String valorHora,
+) async {
+  Database? db = await iniciarBanco();
+  if (db == null) return 2;
+
+  try {
+    Map<String, String> dados = {
+      'projetoID': "projetoID",
+      'clienteID': clienteID,
+      'tarefaID': tarefaID,
+      'data_hora_inicio': dataHoraInicio,
+      'descricao_tarefa': descricaoTarefa,
+      'valor_hora': valorHora,
+    };
+    await db.insert('registros', dados);
+
+    await db.close();
+    return 1;
+  } catch (e) {
+    return 2;
   }
 }

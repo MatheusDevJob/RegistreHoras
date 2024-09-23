@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
+import 'package:matheus/screens/Home.dart';
 import 'package:matheus/services/banco.dart';
 import 'package:matheus/services/helper.dart';
 import 'package:matheus/services/reformatarDados.dart';
 import 'package:matheus/widgets/FutureDrop.dart';
+import 'package:matheus/widgets/PegarData.dart';
+import 'package:matheus/widgets/PegarHora.dart';
 import 'package:matheus/widgets/myAppBar.dart';
 import 'package:matheus/widgets/myDrawer.dart';
 
@@ -15,9 +19,13 @@ class RegistrarHoras extends StatefulWidget {
 }
 
 class _RegistrarHorasState extends State<RegistrarHoras> {
-  TimeOfDay? hora;
+  final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final TextEditingController registroC = TextEditingController();
+  final TextEditingController valorHoraC = TextEditingController();
+
   DateTime data = DateTime.now();
-  String? horasHoje;
+  late String dataString;
+  late String horasHoje;
   List<String> listaHoras = [];
   Map<String, List> mapaDatas = {};
   String aberturaString = "";
@@ -30,15 +38,10 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
 
   @override
   void initState() {
-    carregarHoras();
+    DateTime data = DateTime.now();
+    horasHoje = DateFormat("HH:mm").format(data);
+    dataString = DateFormat("yyyy-MM-dd").format(data);
     super.initState();
-  }
-
-  void carregarHoras() async {
-    var horas = await buscar();
-    listaHoras = tratarHorasParaLista(horas);
-    mapaDatas = separarDatas(listaHoras);
-    calcularHorasTrabalhadasHoje();
   }
 
   void calcularHorasTrabalhadasHoje() {
@@ -77,117 +80,160 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
 
   @override
   Widget build(BuildContext context) {
+    void tratarResposta(int resposta) {
+      if (resposta == 1) {
+        Navigator.pushAndRemoveUntil(
+          context,
+          MaterialPageRoute(
+            builder: (context) => const Home(),
+          ),
+          ModalRoute.withName('/'),
+        );
+      } else {
+        alertDialog(context, "Houve um erro ao registrar a atividade");
+      }
+    }
+
     void registrarHora() async {
-      if (hora == null) {
-        alertDialog(context, "Selecione um horário.", corCaixa: Colors.red);
-        return;
-      }
-      String dataFormatada = DateFormat('dd/MM/yyyy').format(data);
-      String horaFormatada = formatarHora(hora!);
-      await registrar(dataFormatada, horaFormatada);
-
-      carregarHoras();
-    }
-
-    Future<void> selectTime(BuildContext context) async {
-      final TimeOfDay? picked = await showTimePicker(
-        context: context,
-        initialTime: hora ?? TimeOfDay.now(),
+      int resposta = await registrarAtividade(
+        projetoID!,
+        clienteID!,
+        tarefaID!,
+        "$dataString $horasHoje",
+        registroC.text,
+        valorHoraC.text,
       );
-      if (picked != null && picked != hora) {
-        setState(() => hora = picked);
-      }
+
+      tratarResposta(resposta);
     }
 
+    void pegarData(DateTime date) =>
+        dataString = DateFormat('yyyy-MM-dd').format(date);
+    void pegarHora(TimeOfDay hora) => horasHoje = hora.format(context);
     void selecionarProjeto(String idProjeto) => projetoID = idProjeto;
     void selecionarCliente(String idCliente) => clienteID = idCliente;
     void selecionarTarefa(String idTarefa) => tarefaID = idTarefa;
 
     return Scaffold(
-      appBar: const MyAppBar(titulo: "BANCO DE HORAS"),
+      appBar: const MyAppBar(titulo: "REGISTRAR ATIVIDADE"),
       drawer: const MyDrawer(),
-      body: Padding(
-        padding: const EdgeInsets.all(8),
-        child: Column(
-          children: <Widget>[
-            const Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                Text("Projetos:", style: TextStyle(fontSize: 18)),
-                Text("Cliente:", style: TextStyle(fontSize: 18)),
-                Text("Tarefas:", style: TextStyle(fontSize: 18)),
-              ],
-            ),
-            Row(children: [
-              Expanded(
-                child: FutureDrop(
-                  onChange: selecionarProjeto,
-                  tabelaBusca: "projetos",
-                  nomeColuna: "projetoNome",
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: FutureDrop(
-                  onChange: selecionarCliente,
-                  tabelaBusca: "clientes",
-                  nomeColuna: "clienteNome",
-                ),
-              ),
-              const SizedBox(width: 10),
-              Expanded(
-                child: FutureDrop(
-                  onChange: selecionarTarefa,
-                  tabelaBusca: "tarefas",
-                  nomeColuna: "tarefaNome",
-                ),
-              ),
-            ]),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+      floatingActionButton: ElevatedButton(
+        onPressed: () {
+          if (formKey.currentState!.validate()) {
+            registrarHora();
+          }
+        },
+        child: const Text("REGISTRAR ATIVIDADE"),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8),
+          child: Form(
+            key: formKey,
+            child: Column(
+              children: <Widget>[
+                const Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Text("ULTIMO TURNO ABERTO: $aberturaString"),
-                    Text("ULTIMO TURNO FECHADO: $fechamentoString"),
+                    Text("Projetos:", style: TextStyle(fontSize: 18)),
+                    Text("Cliente:", style: TextStyle(fontSize: 18)),
+                    Text("Tarefas:", style: TextStyle(fontSize: 18)),
                   ],
                 ),
-                Text("HORAS HOJE: ${horasHoje ?? "-"}"),
-              ],
-            ),
-            SizedBox(
-              height: 400,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  DatePickerDialog(
-                    initialDate: DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime(2200),
+                Row(children: [
+                  Expanded(
+                    child: FutureDrop(
+                      onChange: selecionarProjeto,
+                      tabelaBusca: "projetos",
+                      nomeColuna: "projetoNome",
+                    ),
                   ),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceAround,
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () => selectTime(context),
-                        child: Text(
-                          hora != null
-                              ? 'Hora Selecionada: ${hora!.format(context)}'
-                              : 'Nenhuma hora selecionada',
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: FutureDrop(
+                      onChange: selecionarCliente,
+                      tabelaBusca: "clientes",
+                      nomeColuna: "clienteNome",
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: FutureDrop(
+                      onChange: selecionarTarefa,
+                      tabelaBusca: "tarefas",
+                      nomeColuna: "tarefaNome",
+                    ),
+                  ),
+                ]),
+                const SizedBox(height: 10),
+                Row(
+                  children: [
+                    Expanded(
+                      child: TextFormField(
+                        controller: registroC,
+                        autofocus: true,
+                        decoration: const InputDecoration(
+                          label: Text("Descrição"),
+                          hintText: "Descrição",
+                          border: OutlineInputBorder(),
                         ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Informe o registro.";
+                          }
+                          return null;
+                        },
                       ),
-                      ElevatedButton(
-                        onPressed: () => registrarHora(),
-                        child: const Text("Registrar Hora"),
+                    ),
+                    const SizedBox(width: 10),
+                    SizedBox(
+                      width: 200,
+                      child: TextFormField(
+                        controller: valorHoraC,
+                        inputFormatters: [
+                          // utilizar regexp para permitir apenas números
+                          // e até 2 dígitos após casa decimal
+                          FilteringTextInputFormatter.allow(
+                            RegExp(r'^\d*\.?\d{0,2}'),
+                          )
+                        ],
+                        autofocus: true,
+                        decoration: const InputDecoration(
+                          label: Text("VALOR HORA"),
+                          hintText: "VALOR HORA",
+                          border: OutlineInputBorder(),
+                        ),
+                        validator: (value) {
+                          if (value == null || value.isEmpty) {
+                            return "Informe o valor.";
+                          }
+                          return null;
+                        },
+                      ),
+                    )
+                  ],
+                ),
+                SizedBox(
+                  height: 400,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      PegarData(
+                        retornarValor: pegarData,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime.now(),
+                        lastDate: DateTime(2200),
+                      ),
+                      PegarHora(
+                        retornarTime: pegarHora,
+                        initialTime: TimeOfDay.now(),
                       ),
                     ],
                   ),
-                ],
-              ),
-            )
-          ],
+                )
+              ],
+            ),
+          ),
         ),
       ),
     );
