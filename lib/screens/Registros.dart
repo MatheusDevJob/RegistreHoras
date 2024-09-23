@@ -65,6 +65,61 @@ class _RegistrosState extends State<Registros> {
 
   @override
   Widget build(BuildContext context) {
+    void abrirConfirmacao(Map<String, dynamic> item) {
+      showModalBottomSheet(
+        context: context,
+        shape: const RoundedRectangleBorder(
+          borderRadius: BorderRadius.vertical(
+            top: Radius.circular(20),
+          ),
+        ),
+        isDismissible: false,
+        builder: (BuildContext context) {
+          return Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[
+                const Text(
+                  "Confirmação",
+                  style: TextStyle(
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  "Você tem certeza que deseja realizar esta ação?",
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: <Widget>[
+                    TextButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text(
+                        "Cancelar",
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: () {
+                        funcaoApagar(item["id"].toString()).then((bool bul) {
+                          if (bul) setState(() {});
+                          Navigator.of(context).pop(); // Fecha o modal
+                        });
+                      },
+                      child: const Text("Confirmar"),
+                    ),
+                  ],
+                ),
+              ],
+            ),
+          );
+        },
+      );
+    }
+
     return Scaffold(
       appBar: MyAppBar(titulo: nomeTitulo),
       drawer: const MyDrawer(),
@@ -100,10 +155,7 @@ class _RegistrosState extends State<Registros> {
                       return DataRow(cells: [
                         DataCell(Text(item[nomesColuna![0]])),
                         DataCell(TextButton(
-                          onPressed: () => funcaoApagar(item["id"].toString())
-                              .then((bool bul) {
-                            if (bul) setState(() {});
-                          }),
+                          onPressed: () => abrirConfirmacao(item),
                           child: const Icon(Icons.close),
                         )),
                       ]);
