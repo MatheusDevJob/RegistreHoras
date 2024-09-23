@@ -213,13 +213,8 @@ class _RegistrosState extends State<Registros> {
                                 corCaixa: Colors.black,
                                 corTexto: Colors.white,
                               );
-                              Navigator.pushAndRemoveUntil(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (context) => const RegistrarHoras(),
-                                ),
-                                ModalRoute.withName('/'),
-                              );
+                              registroC.text = '';
+                              setState(() {});
                             } else {
                               alertDialog(
                                 context,
