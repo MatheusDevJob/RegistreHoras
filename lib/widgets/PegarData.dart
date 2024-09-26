@@ -394,7 +394,8 @@ class _PegarDataState extends State<PegarData> with RestorationMixin {
               Icon(useMaterial3 ? Icons.edit_outlined : Icons.edit),
           color: headerForegroundColor,
           tooltip: localizations.inputDateModeButtonLabel,
-          onPressed: _handleEntryModeToggle,
+          // onPressed: _handleEntryModeToggle,
+          onPressed: null,
         );
 
       case DatePickerEntryMode.calendarOnly:

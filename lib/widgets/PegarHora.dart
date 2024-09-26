@@ -2588,25 +2588,25 @@ class _PegarHoraState extends State<PegarHora> with RestorationMixin {
       padding: EdgeInsetsDirectional.only(start: theme.useMaterial3 ? 0 : 4),
       child: Row(
         children: <Widget>[
-          if (_entryMode.value == TimePickerEntryMode.dial ||
-              _entryMode.value == TimePickerEntryMode.input)
-            IconButton(
-              // In material3 mode, we want to use the color as part of the
-              // button style which applies its own opacity. In material2 mode,
-              // we want to use the color as the color, which already includes
-              // the opacity.
-              color: theme.useMaterial3 ? null : entryModeIconColor,
-              style: theme.useMaterial3
-                  ? IconButton.styleFrom(foregroundColor: entryModeIconColor)
-                  : null,
-              onPressed: _toggleEntryMode,
-              icon: Icon(_entryMode.value == TimePickerEntryMode.dial
-                  ? Icons.keyboard_outlined
-                  : Icons.access_time),
-              tooltip: _entryMode.value == TimePickerEntryMode.dial
-                  ? MaterialLocalizations.of(context).inputTimeModeButtonLabel
-                  : MaterialLocalizations.of(context).dialModeButtonLabel,
-            ),
+          // if (_entryMode.value == TimePickerEntryMode.dial ||
+          //     _entryMode.value == TimePickerEntryMode.input)
+          //   IconButton(
+          //     // In material3 mode, we want to use the color as part of the
+          //     // button style which applies its own opacity. In material2 mode,
+          //     // we want to use the color as the color, which already includes
+          //     // the opacity.
+          //     color: theme.useMaterial3 ? null : entryModeIconColor,
+          //     style: theme.useMaterial3
+          //         ? IconButton.styleFrom(foregroundColor: entryModeIconColor)
+          //         : null,
+          //     onPressed: _toggleEntryMode,
+          //     icon: Icon(_entryMode.value == TimePickerEntryMode.dial
+          //         ? Icons.keyboard_outlined
+          //         : Icons.access_time),
+          //     tooltip: _entryMode.value == TimePickerEntryMode.dial
+          //         ? MaterialLocalizations.of(context).inputTimeModeButtonLabel
+          //         : MaterialLocalizations.of(context).dialModeButtonLabel,
+          //   ),
           if (widget.botoes)
             Expanded(
               child: Container(
