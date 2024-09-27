@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 String? horaRetornar;
 String? minutoRetornar;
@@ -69,4 +70,28 @@ String converterInteiroEmValorHora(int horaMinuto) {
   horaRetornar = horaParaString(horaMinuto ~/ 60);
   minutoRetornar = horaParaString(horaMinuto % 60);
   return "$horaRetornar:$minutoRetornar";
+}
+
+Map<String, dynamic> calcularHorasEValor(
+  String dataHoraInicial,
+  String dataHoraFinal,
+  double valorHora,
+) {
+  DateTime data1 = DateFormat("yyyy-MM-dd HH:mm:ss").parse(dataHoraInicial);
+  DateTime data2 = DateFormat("yyyy-MM-dd HH:mm:ss").parse(dataHoraFinal);
+
+  double valorMinuto = valorHora / 60;
+
+  Duration diff = data2.difference(data1);
+  int minutosTrabalhados = diff.inMinutes;
+
+  int horas = minutosTrabalhados ~/ 60;
+  int minutos = minutosTrabalhados % 60;
+
+  double valorReceber = minutosTrabalhados * valorMinuto;
+
+  return {
+    'horasTrabalhadas': '$horas:$minutos',
+    'valorReceber': valorReceber,
+  };
 }
