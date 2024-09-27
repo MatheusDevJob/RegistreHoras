@@ -75,6 +75,10 @@ Future<Database?> iniciarBanco() async {
           );
         ''');
 
+    // código SQLite para resetar tabela
+    // DELETE FROM registros;
+    // VACUUM;
+
     await db.execute('''
           CREATE TABLE IF NOT EXISTS
             registros (
@@ -260,5 +264,23 @@ Future<List<Map<String, dynamic>>> getAtividadeAberta() async {
     return [
       {"erro": e.toString()}
     ];
+  }
+}
+
+Future<dynamic> atualizarAtividade(
+  int atividadeID,
+  String dataHoraFinalizacao,
+  String horasTrabalhadas,
+  double valorReceber,
+) async {
+  Database? db = await iniciarBanco();
+  if (db == null) return false;
+  try {
+    return await db.rawUpdate('''
+        UPDATE registros SET data_hora_fim = ?, horas_trabalhadas = ?, valor_receber = ?
+        WHERE id = ?
+    ''', [dataHoraFinalizacao, horasTrabalhadas, valorReceber, atividadeID]);
+  } catch (e) {
+    return e.toString();
   }
 }
