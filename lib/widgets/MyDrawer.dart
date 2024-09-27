@@ -21,7 +21,7 @@ class _MyDrawerState extends State<MyDrawer> {
         MaterialPageRoute(
           builder: (context) => RegistrarHoras(
             atividadeAberta: atividadeAberta,
-            mapaAtividade: registro[0],
+            mapaAtividade: registro.isNotEmpty ? registro[0] : null,
           ),
         ),
         ModalRoute.withName('/'),
