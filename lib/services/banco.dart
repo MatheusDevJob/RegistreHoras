@@ -210,6 +210,37 @@ Future<List<Map<String, dynamic>>> getDadosTabela(String nomeTabela) async {
   }
 }
 
+Future getRegistrosTabela() async {
+  Database? db = await iniciarBanco();
+  if (db == null) return [];
+  try {
+    List<Map<String, dynamic>> retorno = await db.rawQuery('''
+        SELECT 
+          registros.id,
+          registros.data_hora_inicio,
+          registros.data_hora_fim,
+          registros.descricao_tarefa,
+          registros.valor_hora,
+          registros.horas_trabalhadas,
+          registros.valor_receber,
+          strftime('%d/%m/%Y', data_hora_inicio) AS dataHoraInicio,
+          strftime('%d/%m/%Y', data_hora_fim) AS dataHoraFim,
+          projetos.projetoNome,
+          clientes.clienteNome,
+          tarefas.tarefaNome 
+        FROM registros
+        JOIN projetos ON projetos.id = registros.projetoID
+        JOIN clientes ON clientes.id = registros.clienteID
+        JOIN tarefas ON tarefas.id = registros.tarefaID
+    ''');
+    return retorno;
+  } catch (e) {
+    return [
+      {"erro": e.toString()}
+    ];
+  }
+}
+
 Future<int> registrarAtividade(
   String projetoID,
   String clienteID,
