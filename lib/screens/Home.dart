@@ -81,7 +81,7 @@ class _HomeState extends State<Home> {
                         DataCell(Text(item["dataHoraFim"])),
                         DataCell(Text(item["valor_hora"].toString())),
                         DataCell(Text(item["horas_trabalhadas"].toString())),
-                        DataCell(Text(item["valor_receber"].toString())),
+                        DataCell(Text("R\$ ${item["valor_receber"]}")),
                       ]);
                     }).toList(),
                   ),
