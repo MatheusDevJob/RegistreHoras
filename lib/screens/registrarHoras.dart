@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
-import 'package:matheus/screens/Home.dart';
 import 'package:matheus/services/banco.dart';
 import 'package:matheus/services/helper.dart';
 import 'package:matheus/services/reformatarDados.dart';
@@ -47,7 +46,7 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
   @override
   void initState() {
     DateTime data = DateTime.now();
-    horasHoje = DateFormat("HH:mm").format(data);
+    horasHoje = DateFormat("HH:mm:ss").format(data);
     dataString = DateFormat("yyyy-MM-dd").format(data);
     atividadeAberta = widget.atividadeAberta;
     mapaAtividade = widget.mapaAtividade;
@@ -101,14 +100,17 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
 
   @override
   Widget build(BuildContext context) {
-    void tratarResposta(int resposta) {
+    void tratarResposta(int resposta, List registros) {
+      bool atividadeAberta = registros.isNotEmpty ? true : false;
       if (resposta == 1) {
-        Navigator.pushAndRemoveUntil(
+        Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => const Home(),
+            builder: (context) => RegistrarHoras(
+              atividadeAberta: atividadeAberta,
+              mapaAtividade: registros.isNotEmpty ? registros[0] : null,
+            ),
           ),
-          ModalRoute.withName('/'),
         );
       } else {
         alertDialog(context, "Houve um erro ao registrar a atividade");
@@ -124,17 +126,36 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
         registroC.text,
         valorHoraC.text,
       );
-
-      tratarResposta(resposta);
+      List registros = await getAtividadeAberta();
+      tratarResposta(resposta, registros);
     }
 
     void pegarData(DateTime date) =>
         dataString = DateFormat('yyyy-MM-dd').format(date);
-    void pegarHora(TimeOfDay hora) => horasHoje = hora.format(context);
+    void pegarHora(TimeOfDay hora) => horasHoje = "${hora.format(context)}:00";
+
     void selecionarProjeto(String idProjeto) => projetoID = idProjeto;
     void selecionarCliente(String idCliente) => clienteID = idCliente;
     void selecionarTarefa(String idTarefa) => tarefaID = idTarefa;
-    void atualizarAtividade() {}
+    void atualizarAtividadeLocal() async {
+      String horaI = mapaAtividade!["data_hora_inicio"] + ":00";
+      String horaF = "$dataString $horasHoje";
+      Map<String, dynamic> calculo = calcularHorasEValor(
+        horaI,
+        horaF,
+        mapaAtividade!["valor_hora"],
+      );
+
+      int resposta = await atualizarAtividade(
+        mapaAtividade!["id"],
+        horaF,
+        calculo["horasTrabalhadas"],
+        calculo["valorReceber"],
+      );
+
+      List registros = await getAtividadeAberta();
+      tratarResposta(resposta, registros);
+    }
 
     return Scaffold(
       appBar: const MyAppBar(titulo: "REGISTRAR ATIVIDADE"),
@@ -142,7 +163,7 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
       floatingActionButton: ElevatedButton(
         onPressed: () {
           if (atividadeAberta) {
-            atualizarAtividade();
+            atualizarAtividadeLocal();
           } else if (formKey.currentState!.validate()) {
             registrarHora();
           }
@@ -299,8 +320,8 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
                       PegarData(
                         retornarValor: pegarData,
                         initialDate: DateTime.now(),
-                        firstDate: DateTime.now(),
-                        lastDate: DateTime(2200),
+                        firstDate: DateTime(1800),
+                        lastDate: DateTime(3000),
                       ),
                       PegarHora(
                         retornarTime: pegarHora,
