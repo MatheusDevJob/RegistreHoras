@@ -5,11 +5,13 @@ class FutureDrop extends StatefulWidget {
   final Function onChange;
   final String? nomeColuna;
   final String tabelaBusca;
+  final String hintText;
   const FutureDrop({
     super.key,
     required this.onChange,
     required this.nomeColuna,
     required this.tabelaBusca,
+    this.hintText = "Selecione uma opção",
   });
 
   @override
@@ -21,11 +23,13 @@ class _FutureDropState extends State<FutureDrop> {
   late Function funcaoOnChange;
   late String? nomeColuna;
   late String tabelaBusca;
+  late String? hintText;
   @override
   void initState() {
     funcaoOnChange = widget.onChange;
     nomeColuna = widget.nomeColuna;
     tabelaBusca = widget.tabelaBusca;
+    hintText = widget.hintText;
     super.initState();
   }
 
@@ -41,12 +45,18 @@ class _FutureDropState extends State<FutureDrop> {
         } else if (!snapshot.hasData) {
           return const Text("Nenhum dado disponível");
         }
-        List<Map<String, dynamic>> data = snapshot.data!;
+        List<Map<String, dynamic>> antigaData = snapshot.data!;
+        List<Map<String, dynamic>> data = [];
+
+        data.add({'id': null, nomeColuna!: hintText});
+        for (var valor in antigaData) {
+          data.add(valor);
+        }
         return DropdownButtonFormField<String>(
           decoration: const InputDecoration(
             border: OutlineInputBorder(),
           ),
-          hint: const Text("Selecione uma opção"),
+          hint: Text(hintText!),
           value: selecionado,
           onChanged: (newValue) {
             setState(() {
