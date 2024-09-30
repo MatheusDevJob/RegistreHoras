@@ -210,9 +210,16 @@ Future<List<Map<String, dynamic>>> getDadosTabela(String nomeTabela) async {
   }
 }
 
-Future getRegistrosTabela({String? dataInicio, String? dataFinal}) async {
+Future getRegistrosTabela({
+  String? dataInicio,
+  String? dataFinal,
+  String? projetoID,
+  String? clienteID,
+  String? tarefaID,
+}) async {
   Database? db = await iniciarBanco();
   if (db == null) return [];
+  print(projetoID);
   try {
     String query = '''
         SELECT 
@@ -234,17 +241,32 @@ Future getRegistrosTabela({String? dataInicio, String? dataFinal}) async {
         JOIN tarefas ON tarefas.id = registros.tarefaID
     ''';
 
+    // Lista para armazenar todas as condições WHERE
+    List<String> conditions = [];
+
+    // Adiciona as condições conforme os parâmetros fornecidos
     if (dataInicio != null && dataFinal != null) {
-      query += '''
-        WHERE data_hora_inicio >= "$dataInicio 00:00:00" AND data_hora_fim <= "$dataFinal 23:59:59"
-      ''';
+      conditions.add(
+          'data_hora_inicio >= "$dataInicio 00:00:00" AND data_hora_fim <= "$dataFinal 23:59:59"');
+    }
+    if (projetoID != null && projetoID != "null") {
+      conditions.add('registros.projetoID = "$projetoID"');
+    }
+    if (clienteID != null && clienteID != "null") {
+      conditions.add('registros.clienteID = "$clienteID"');
+    }
+    if (tarefaID != null && tarefaID != "null") {
+      conditions.add('registros.tarefaID = "$tarefaID"');
+    }
+
+    // Se houver condições, adiciona a cláusula WHERE
+    if (conditions.isNotEmpty) {
+      query += ' WHERE ${conditions.join(' AND ')}';
     }
     List<Map<String, dynamic>> retorno = await db.rawQuery(query);
     return retorno;
   } catch (e) {
-    return [
-      {"erro": e.toString()}
-    ];
+    return [];
   }
 }
 

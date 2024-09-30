@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:matheus/screens/PegaData.dart';
 import 'package:matheus/services/banco.dart';
+import 'package:matheus/widgets/FutureDrop.dart';
 import 'package:matheus/widgets/MyDrawer.dart';
 import 'package:matheus/widgets/myAppBar.dart';
 
@@ -14,21 +15,26 @@ class Home extends StatefulWidget {
 class _HomeState extends State<Home> {
   String? dataInicio;
   String? dataFinal;
+  String? projetoID;
+  String? clienteID;
+  String? tarefaID;
 
   Future<List> buscarRegistros() async {
-    List lista =
-        await getRegistrosTabela(dataInicio: dataInicio, dataFinal: dataFinal);
+    List lista = await getRegistrosTabela(
+      dataInicio: dataInicio,
+      dataFinal: dataFinal,
+      projetoID: projetoID,
+      clienteID: clienteID,
+      tarefaID: tarefaID,
+    );
     return lista;
   }
 
-  void getDataInicio(String? data) {
-    dataInicio = data;
-  }
-
-  void getDataFim(String? data) {
-    dataFinal = data;
-  }
-
+  void getDataInicio(String? data) => dataInicio = data;
+  void getDataFim(String? data) => dataFinal = data;
+  void selecionarProjeto(String idProjeto) => projetoID = idProjeto;
+  void selecionarCliente(String idCliente) => clienteID = idCliente;
+  void selecionarTarefa(String idTarefa) => tarefaID = idTarefa;
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,10 +78,37 @@ class _HomeState extends State<Home> {
                   retorno: getDataFim,
                   textoBotao: "Data Final",
                 ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FutureDrop(
+                    onChange: selecionarProjeto,
+                    tabelaBusca: "projetos",
+                    nomeColuna: "projetoNome",
+                    hintText: "Projeto",
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FutureDrop(
+                    onChange: selecionarCliente,
+                    tabelaBusca: "clientes",
+                    nomeColuna: "clienteNome",
+                    hintText: "Cliente",
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FutureDrop(
+                    onChange: selecionarTarefa,
+                    tabelaBusca: "tarefas",
+                    nomeColuna: "tarefaNome",
+                    hintText: "Tarefa",
+                  ),
+                ),
                 IconButton(
                   onPressed: () => setState(() {}),
                   icon: const Icon(Icons.search),
-                )
+                ),
               ],
             ),
           ),
@@ -84,7 +117,7 @@ class _HomeState extends State<Home> {
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
-              } else if (!snapshot.hasData) {
+              } else if (snapshot.data!.isEmpty) {
                 return const Text("Nenhum registro encontrado.");
               } else if (snapshot.hasError) {
                 return Text(snapshot.error.toString());
