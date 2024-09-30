@@ -65,7 +65,7 @@ class _FutureDropState extends State<FutureDrop> {
             });
           },
           validator: (value) {
-            if (value == null || value.isEmpty) {
+            if (value == null || value == "null" || value.isEmpty) {
               return "Informe o registro.";
             }
             return null;
