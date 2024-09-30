@@ -233,8 +233,7 @@ Future getRegistrosTabela({String? dataInicio, String? dataFinal}) async {
         JOIN clientes ON clientes.id = registros.clienteID
         JOIN tarefas ON tarefas.id = registros.tarefaID
     ''';
-    print(dataInicio);
-    print(dataFinal);
+
     if (dataInicio != null && dataFinal != null) {
       query += '''
         WHERE data_hora_inicio >= "$dataInicio 00:00:00" AND data_hora_fim <= "$dataFinal 23:59:59"
