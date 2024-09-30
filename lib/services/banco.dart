@@ -210,11 +210,11 @@ Future<List<Map<String, dynamic>>> getDadosTabela(String nomeTabela) async {
   }
 }
 
-Future getRegistrosTabela() async {
+Future getRegistrosTabela({String? dataInicio, String? dataFinal}) async {
   Database? db = await iniciarBanco();
   if (db == null) return [];
   try {
-    List<Map<String, dynamic>> retorno = await db.rawQuery('''
+    String query = '''
         SELECT 
           registros.id,
           registros.data_hora_inicio,
@@ -232,7 +232,15 @@ Future getRegistrosTabela() async {
         JOIN projetos ON projetos.id = registros.projetoID
         JOIN clientes ON clientes.id = registros.clienteID
         JOIN tarefas ON tarefas.id = registros.tarefaID
-    ''');
+    ''';
+    print(dataInicio);
+    print(dataFinal);
+    if (dataInicio != null && dataFinal != null) {
+      query += '''
+        WHERE data_hora_inicio >= "$dataInicio 00:00:00" AND data_hora_fim <= "$dataFinal 23:59:59"
+      ''';
+    }
+    List<Map<String, dynamic>> retorno = await db.rawQuery(query);
     return retorno;
   } catch (e) {
     return [
