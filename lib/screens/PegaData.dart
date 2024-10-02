@@ -4,7 +4,13 @@ import 'package:intl/intl.dart';
 class PegaData extends StatefulWidget {
   final Function(String) retorno;
   final String textoBotao;
-  const PegaData({super.key, required this.retorno, required this.textoBotao});
+  final String textoInicialBotao;
+  const PegaData({
+    super.key,
+    required this.retorno,
+    required this.textoBotao,
+    required this.textoInicialBotao
+  });
 
   @override
   State<PegaData> createState() => _PegaDataState();
@@ -15,7 +21,7 @@ class _PegaDataState extends State<PegaData> {
   late Function retorno;
   @override
   void initState() {
-    botao = widget.textoBotao;
+    botao = widget.textoInicialBotao;
     retorno = widget.retorno;
     super.initState();
   }

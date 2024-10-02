@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:matheus/screens/PegaData.dart';
 import 'package:matheus/services/banco.dart';
 import 'package:matheus/widgets/FutureDrop.dart';
@@ -13,11 +14,14 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  String? dataInicio;
-  String? dataFinal;
+  late String? dataInicio;
+  late String? dataFinal;
   String? projetoID;
   String? clienteID;
   String? tarefaID;
+  String? botaoDataInicial;
+  String? botaoDataFinal;
+  
 
   Future<List> buscarRegistros() async {
     List lista = await getRegistrosTabela(
@@ -35,6 +39,21 @@ class _HomeState extends State<Home> {
   void selecionarProjeto(String idProjeto) => projetoID = idProjeto;
   void selecionarCliente(String idCliente) => clienteID = idCliente;
   void selecionarTarefa(String idTarefa) => tarefaID = idTarefa;
+  DateTime now = DateTime.now();
+
+  @override
+  void initState() {
+    DateTime primeiroDia = DateTime(now.year, now.month, 1);
+    DateTime ultimoDia = DateTime(now.year, now.month + 1, 0);
+
+    botaoDataInicial = DateFormat("dd/MM/yyyy").format(primeiroDia);
+    botaoDataFinal = DateFormat("dd/MM/yyyy").format(ultimoDia);
+    dataInicio = DateFormat("yyyy-MM-dd").format(primeiroDia);
+    dataFinal = DateFormat("yyyy-MM-dd").format(ultimoDia);
+
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,11 +91,13 @@ class _HomeState extends State<Home> {
                 PegaData(
                   retorno: getDataInicio,
                   textoBotao: "Data Inicial",
+                  textoInicialBotao: botaoDataInicial!,
                 ),
                 const Text(" até "),
                 PegaData(
                   retorno: getDataFim,
                   textoBotao: "Data Final",
+                  textoInicialBotao: botaoDataFinal!,
                 ),
                 const SizedBox(width: 10),
                 Expanded(
