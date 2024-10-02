@@ -231,6 +231,8 @@ Future getRegistrosTabela({
           registros.valor_receber,
           strftime('%d/%m/%Y', data_hora_inicio) AS dataHoraInicio,
           strftime('%d/%m/%Y', data_hora_fim) AS dataHoraFim,
+          strftime('%d/%m/%Y %H:%M:%S', data_hora_inicio) AS dataHoraInicioCompleta,
+          strftime('%d/%m/%Y %H:%M:%S', data_hora_fim) AS dataHoraFimCompleta,
           projetos.projetoNome,
           clientes.clienteNome,
           tarefas.tarefaNome 

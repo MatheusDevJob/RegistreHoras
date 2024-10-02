@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:matheus/screens/PegaData.dart';
 import 'package:matheus/services/banco.dart';
+import 'package:matheus/services/helper.dart';
 import 'package:matheus/widgets/FutureDrop.dart';
 import 'package:matheus/widgets/MyDrawer.dart';
 import 'package:matheus/widgets/myAppBar.dart';
@@ -33,6 +35,11 @@ class _HomeState extends State<Home> {
     return lista;
   }
 
+  void buscarDadosPlanilha() async {
+    List lista = await buscarRegistros();
+    gerarPlanilha(lista).then((value) => alertDialog(context, value));
+  }
+
   void getDataInicio(String? data) => dataInicio = data;
   void getDataFim(String? data) => dataFinal = data;
   void selecionarProjeto(String idProjeto) => projetoID = idProjeto;
@@ -57,30 +64,34 @@ class _HomeState extends State<Home> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: MyAppBar(
-          titulo: "Home",
-          texto: SizedBox(
-            child: FutureBuilder(
-              future: buscarRegistros(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (!snapshot.hasData) {
-                  return const Text("Nenhum registro encontrado.");
-                } else if (snapshot.hasError) {
-                  return Text(snapshot.error.toString());
-                }
-                List<dynamic> data = snapshot.data!;
-                double total = 0;
-                for (var registro in data) {
-                  total += registro["valor_receber"];
-                }
-                return Text(
-                    "Valor total a receber: R\$ ${total.toStringAsFixed(2)}");
-              },
-            ),
-          )),
+        titulo: "Home",
+        texto: SizedBox(
+          child: FutureBuilder(
+            future: buscarRegistros(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (!snapshot.hasData) {
+                return const Text("Nenhum registro encontrado.");
+              } else if (snapshot.hasError) {
+                return Text(snapshot.error.toString());
+              }
+              List<dynamic> data = snapshot.data!;
+              double total = 0;
+              for (var registro in data) {
+                total += registro["valor_receber"];
+              }
+              return Text(
+                  "Valor total a receber: R\$ ${total.toStringAsFixed(2)}");
+            },
+          ),
+        ),
+      ),
       drawer: const MyDrawer(),
-      // floatingActionButton: ,
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => buscarDadosPlanilha(),
+        child: const FaIcon(FontAwesomeIcons.fileExcel),
+      ),
       body: Column(
         children: [
           Container(
