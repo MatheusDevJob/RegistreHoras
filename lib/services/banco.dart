@@ -219,7 +219,6 @@ Future getRegistrosTabela({
 }) async {
   Database? db = await iniciarBanco();
   if (db == null) return [];
-  print(projetoID);
   try {
     String query = '''
         SELECT 
@@ -340,10 +339,11 @@ Future<int> atualizarAtividade(
     Map<String, dynamic> dados = {
       'data_hora_fim': dataHoraFinalizacao,
       'horas_trabalhadas': horasTrabalhadas,
-      'valor_receber': valorReceber,
+      'valor_receber': valorReceber.toStringAsFixed(2),
       'descricao_tarefa': descricaoTarefa,
     };
-    return db.update("registros", dados, where: "id = ?", whereArgs: [atividadeID]);
+    return db
+        .update("registros", dados, where: "id = ?", whereArgs: [atividadeID]);
   } catch (e) {
     return 0;
   }
