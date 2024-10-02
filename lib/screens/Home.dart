@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:matheus/screens/PegaData.dart';
@@ -171,6 +172,7 @@ class _HomeState extends State<Home> {
                       child: SingleChildScrollView(
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
+                          dataRowHeight: 80,
                           columns: const [
                             DataColumn(label: Text("Projet")),
                             DataColumn(label: Text("Cliente")),
@@ -187,7 +189,19 @@ class _HomeState extends State<Home> {
                               DataCell(Text(item["projetoNome"])),
                               DataCell(Text(item["clienteNome"])),
                               DataCell(Text(item["tarefaNome"])),
-                              DataCell(Text(item["descricao_tarefa"])),
+                              DataCell(
+                                SingleChildScrollView(
+                                  child: ConstrainedBox(
+                                    constraints: const BoxConstraints(
+                                      maxWidth: 600,
+                                    ),
+                                    child: Text(
+                                      item["descricao_tarefa"],
+                                      softWrap: true,
+                                    ),
+                                  ),
+                                ),
+                              ),
                               DataCell(Text(item["dataHoraInicio"])),
                               DataCell(Text(item["dataHoraFim"])),
                               DataCell(Text(item["valor_hora"].toString())),
