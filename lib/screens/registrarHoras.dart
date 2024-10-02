@@ -151,6 +151,7 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
         horaF,
         calculo["horasTrabalhadas"],
         calculo["valorReceber"],
+        registroC.text,
       );
 
       List registros = await getAtividadeAberta();
@@ -268,7 +269,6 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
                     Expanded(
                       child: TextFormField(
                         controller: registroC,
-                        readOnly: atividadeAberta,
                         autofocus: true,
                         decoration: const InputDecoration(
                           label: Text("Descrição"),

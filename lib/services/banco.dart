@@ -327,20 +327,24 @@ Future<List<Map<String, dynamic>>> getAtividadeAberta() async {
   }
 }
 
-Future<dynamic> atualizarAtividade(
+Future<int> atualizarAtividade(
   int atividadeID,
   String dataHoraFinalizacao,
   String horasTrabalhadas,
   double valorReceber,
+  String descricaoTarefa,
 ) async {
   Database? db = await iniciarBanco();
-  if (db == null) return false;
+  if (db == null) return 0;
   try {
-    return await db.rawUpdate('''
-        UPDATE registros SET data_hora_fim = ?, horas_trabalhadas = ?, valor_receber = ?
-        WHERE id = ?
-    ''', [dataHoraFinalizacao, horasTrabalhadas, valorReceber, atividadeID]);
+    Map<String, dynamic> dados = {
+      'data_hora_fim': dataHoraFinalizacao,
+      'horas_trabalhadas': horasTrabalhadas,
+      'valor_receber': valorReceber,
+      'descricao_tarefa': descricaoTarefa,
+    };
+    return db.update("registros", dados, where: "id = ?", whereArgs: [atividadeID]);
   } catch (e) {
-    return e.toString();
+    return 0;
   }
 }
