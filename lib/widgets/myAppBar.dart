@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String titulo;
-  const MyAppBar({super.key, required this.titulo});
+  final Widget? texto;
+  const MyAppBar({super.key, required this.titulo, this.texto});
 
   @override
   Size get preferredSize => const Size.fromHeight(kToolbarHeight);
@@ -13,6 +14,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       title: Text(titulo),
       backgroundColor: Colors.grey[400],
       shape: const Border(bottom: BorderSide(color: Colors.grey)),
+      actions: [texto ?? const Text(""), const SizedBox(width: 20)],
     );
   }
 }

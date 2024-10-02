@@ -21,7 +21,6 @@ class _HomeState extends State<Home> {
   String? tarefaID;
   String? botaoDataInicial;
   String? botaoDataFinal;
-  
 
   Future<List> buscarRegistros() async {
     List lista = await getRegistrosTabela(
@@ -57,26 +56,31 @@ class _HomeState extends State<Home> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: const MyAppBar(titulo: "Home"),
+      appBar: MyAppBar(
+          titulo: "Home",
+          texto: SizedBox(
+            child: FutureBuilder(
+              future: buscarRegistros(),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const CircularProgressIndicator();
+                } else if (!snapshot.hasData) {
+                  return const Text("Nenhum registro encontrado.");
+                } else if (snapshot.hasError) {
+                  return Text(snapshot.error.toString());
+                }
+                List<dynamic> data = snapshot.data!;
+                double total = 0;
+                for (var registro in data) {
+                  total += registro["valor_receber"];
+                }
+                return Text(
+                    "Valor total a receber: R\$ ${total.toStringAsFixed(2)}");
+              },
+            ),
+          )),
       drawer: const MyDrawer(),
-      floatingActionButton: FutureBuilder(
-        future: buscarRegistros(),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return const CircularProgressIndicator();
-          } else if (!snapshot.hasData) {
-            return const Text("Nenhum registro encontrado.");
-          } else if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
-          }
-          List<dynamic> data = snapshot.data!;
-          double total = 0;
-          for (var registro in data) {
-            total += registro["valor_receber"];
-          }
-          return Text("Valor total a receber: R\$ ${total.toStringAsFixed(2)}");
-        },
-      ),
+      // floatingActionButton: ,
       body: Column(
         children: [
           Container(
