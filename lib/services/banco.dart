@@ -264,6 +264,7 @@ Future getRegistrosTabela({
     if (conditions.isNotEmpty) {
       query += ' WHERE ${conditions.join(' AND ')}';
     }
+    query += " ORDER BY registros.data_hora_inicio DESC";
     List<Map<String, dynamic>> retorno = await db.rawQuery(query);
     return retorno;
   } catch (e) {
