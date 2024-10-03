@@ -33,6 +33,7 @@ void alertDialog(
     content: Text(msg),
     backgroundColor: corCaixa,
     duration: Duration(seconds: duracao),
+    showCloseIcon: true,
   ));
 }
 

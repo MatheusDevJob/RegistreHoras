@@ -145,6 +145,10 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
         horaF,
         mapaAtividade!["valor_hora"],
       );
+      if (!calculo["status"]) {
+        alertDialog(context, calculo["msg"], duracao: 30);
+        return;
+      }
 
       int resposta = await atualizarAtividade(
         mapaAtividade!["id"],

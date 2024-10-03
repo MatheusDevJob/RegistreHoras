@@ -84,13 +84,20 @@ Map<String, dynamic> calcularHorasEValor(
 
   Duration diff = data2.difference(data1);
   int minutosTrabalhados = diff.inMinutes;
-
+  if (minutosTrabalhados < 1) {
+    return {
+      'status': false,
+      'msg':
+          'Data e Hora inválidas. Você abriu essa atividade as $dataHoraInicial e tentou fechar as $dataHoraFinal',
+    };
+  }
   int horas = minutosTrabalhados ~/ 60;
   int minutos = minutosTrabalhados % 60;
 
   double valorReceber = minutosTrabalhados * valorMinuto;
 
   return {
+    'status': true,
     'horasTrabalhadas': '$horas:$minutos',
     'valorReceber': valorReceber,
   };
