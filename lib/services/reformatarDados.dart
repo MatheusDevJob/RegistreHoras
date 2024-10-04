@@ -98,7 +98,28 @@ Map<String, dynamic> calcularHorasEValor(
 
   return {
     'status': true,
-    'horasTrabalhadas': '${horas.toString().padLeft(2, '0')}:${minutos.toString().padLeft(2, '0')}',
+    'horasTrabalhadas':
+        '${horas.toString().padLeft(2, '0')}:${minutos.toString().padLeft(2, '0')}',
     'valorReceber': valorReceber,
   };
+}
+
+int horaPraMinuto(String hora) {
+  List lista = hora.split(":");
+  int horas = int.parse(lista[0]);
+  int minutos = int.parse(lista[1]);
+  return (horas * 60) + minutos;
+}
+
+List somaHorasValor(List listaComValores) {
+  double total = 0;
+  int minutosTrabalhados = 0;
+  for (var registro in listaComValores) {
+    minutosTrabalhados += horaPraMinuto(registro["horas_trabalhadas"]);
+    total += registro["valor_receber"];
+  }
+
+  String horas = converterInteiroEmValorHora(minutosTrabalhados);
+
+  return [total, horas];
 }

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:matheus/screens/EdiarRegistro.dart';
+import 'package:matheus/services/reformatarDados.dart';
 import 'package:matheus/widgets/PegaData.dart';
 import 'package:matheus/services/banco.dart';
 import 'package:matheus/services/helper.dart';
@@ -89,12 +90,17 @@ class _HomeState extends State<Home> {
                 return Text(snapshot.error.toString());
               }
               List<dynamic> data = snapshot.data!;
-              double total = 0;
-              for (var registro in data) {
-                total += registro["valor_receber"];
-              }
+              List result = somaHorasValor(data);
+              double total = result[0];
+              String horas = result[1];
+
               return Text(
-                  "Valor total a receber: R\$ ${total.toStringAsFixed(2)}");
+                "Total de horas trabalhadas: $horas.\n Valor total a receber: R\$ ${total.toStringAsFixed(2)}",
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.w600,
+                ),
+              );
             },
           ),
         ),
@@ -155,9 +161,8 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 IconButton(
-                  style: const ButtonStyle(
-                    iconSize: WidgetStatePropertyAll(40)
-                  ),
+                  style:
+                      const ButtonStyle(iconSize: WidgetStatePropertyAll(40)),
                   onPressed: () => setState(() {}),
                   icon: const Icon(Icons.search),
                 ),
