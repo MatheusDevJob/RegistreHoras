@@ -1,47 +1,13 @@
-import 'dart:io';
 import 'package:matheus/services/helper.dart';
-import 'package:path/path.dart' as p;
 import 'package:sqflite_common_ffi/sqflite_ffi.dart';
-
-Future<String> getPath() async {
-  final String appDataPath = Platform.environment['APPDATA']!;
-  final bancoDiretorio = Directory("$appDataPath/banco horas");
-
-  if (!await bancoDiretorio.exists()) {
-    await bancoDiretorio.create(recursive: true);
-  }
-
-  return bancoDiretorio.path;
-}
-
-Future<File> get banco async {
-  String caminho = await getPath();
-  return File('$caminho/banco_horas.txt');
-}
-
-Future<String> buscar() async {
-  try {
-    final file = await banco;
-    return await file.readAsString();
-  } catch (e) {
-    return '';
-  }
-}
 
 Future<Database?> iniciarBanco() async {
   try {
     // Init ffi loader if needed.
     sqfliteFfiInit();
-    String caminho = await getPath();
     databaseFactory = databaseFactoryFfi;
-    //Create path for database
-    String dbPath = p.join(caminho, "databases", "registroHoras.db");
-
-    // Verificar se o diretório existe, se não, criar o diretório
-    if (!await Directory(p.dirname(dbPath)).exists()) {
-      await Directory(p.dirname(dbPath)).create(recursive: true);
-    }
-    Database db = await databaseFactory.openDatabase(dbPath);
+    String caminho = await databaseFactory.getDatabasesPath();
+    Database db = await databaseFactory.openDatabase("$caminho/registroHoras.db");
     // Verificar se a tabela 'projetos' existe
     await db.execute('''
           CREATE TABLE IF NOT EXISTS projetos (
