@@ -109,6 +109,7 @@ class _HomeState extends State<Home> {
           Container(
             decoration: BoxDecoration(
               border: Border.all(color: Colors.grey, width: 1),
+              borderRadius: BorderRadius.circular(5),
             ),
             padding: const EdgeInsets.all(5),
             margin: const EdgeInsets.all(5),
@@ -161,84 +162,84 @@ class _HomeState extends State<Home> {
             ),
           ),
           Expanded(
-            child: FutureBuilder(
-              future: buscarRegistros(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const CircularProgressIndicator();
-                } else if (snapshot.data!.isEmpty) {
-                  return const Text("Nenhum registro encontrado.");
-                } else if (snapshot.hasError) {
-                  return Text(snapshot.error.toString());
-                }
-                List<dynamic> data = snapshot.data!;
+            child: Container(
+              margin: const EdgeInsets.fromLTRB(4, 0, 4, 4),
+              decoration: BoxDecoration(
+                border: Border.all(),
+                borderRadius: BorderRadius.circular(5),
+              ),
+              child: FutureBuilder(
+                future: buscarRegistros(),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const CircularProgressIndicator();
+                  } else if (snapshot.data!.isEmpty) {
+                    return const Text("Nenhum registro encontrado.");
+                  } else if (snapshot.hasError) {
+                    return Text(snapshot.error.toString());
+                  }
+                  List<dynamic> data = snapshot.data!;
 
-                return Scrollbar(
-                  interactive: false,
-                  trackVisibility: true,
-                  child: SingleChildScrollView(
-                    child: Scrollbar(
-                      interactive: false,
-                      trackVisibility: true,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          dataRowHeight: 80,
-                          columns: [
-                            DataColumn(
-                              label: const Text("Ações"),
-                              onSort: (columnIndex, ascending) {
-                                print(columnIndex);
-                                print(ascending);
-                              },
-                            ),
-                            const DataColumn(label: Text("Projet")),
-                            const DataColumn(label: Text("Cliente")),
-                            const DataColumn(label: Text("Tarefa")),
-                            const DataColumn(label: Text("Descrição")),
-                            const DataColumn(label: Text("Data Abertura")),
-                            const DataColumn(label: Text("Data Conclusão")),
-                            const DataColumn(label: Text("Valor Hora")),
-                            const DataColumn(label: Text("Horas Trabalhadas")),
-                            const DataColumn(label: Text("Valor Cobrar")),
-                          ],
-                          rows: data.map<DataRow>((item) {
-                            return DataRow(cells: [
-                              DataCell(
-                                const Text("Editar"),
-                                showEditIcon: true,
-                                onTap: () => navegarEdicao(item),
-                              ),
-                              DataCell(Text(item["projetoNome"])),
-                              DataCell(Text(item["clienteNome"])),
-                              DataCell(Text(item["tarefaNome"])),
-                              DataCell(
-                                SingleChildScrollView(
-                                  child: ConstrainedBox(
-                                    constraints: const BoxConstraints(
-                                      maxWidth: 600,
-                                    ),
-                                    child: Text(
-                                      item["descricao_tarefa"],
-                                      softWrap: true,
+                  return Scrollbar(
+                    interactive: false,
+                    trackVisibility: true,
+                    child: SingleChildScrollView(
+                      child: Scrollbar(
+                        interactive: false,
+                        trackVisibility: true,
+                        child: SingleChildScrollView(
+                          scrollDirection: Axis.horizontal,
+                          child: DataTable(
+                            dataRowHeight: 80,
+                            columns: const [
+                              DataColumn(label: Text("Ações")),
+                              DataColumn(label: Text("Projet")),
+                              DataColumn(label: Text("Cliente")),
+                              DataColumn(label: Text("Tarefa")),
+                              DataColumn(label: Text("Descrição")),
+                              DataColumn(label: Text("Data Abertura")),
+                              DataColumn(label: Text("Data Conclusão")),
+                              DataColumn(label: Text("Valor Hora")),
+                              DataColumn(label: Text("Horas Trabalhadas")),
+                              DataColumn(label: Text("Valor Cobrar")),
+                            ],
+                            rows: data.map<DataRow>((item) {
+                              return DataRow(cells: [
+                                DataCell(
+                                  const FaIcon(FontAwesomeIcons.pen),
+                                  onTap: () => navegarEdicao(item),
+                                ),
+                                DataCell(Text(item["projetoNome"])),
+                                DataCell(Text(item["clienteNome"])),
+                                DataCell(Text(item["tarefaNome"])),
+                                DataCell(
+                                  SingleChildScrollView(
+                                    child: ConstrainedBox(
+                                      constraints: const BoxConstraints(
+                                        maxWidth: 600,
+                                      ),
+                                      child: Text(
+                                        item["descricao_tarefa"],
+                                        softWrap: true,
+                                      ),
                                     ),
                                   ),
                                 ),
-                              ),
-                              DataCell(Text(item["dataHoraInicioCompleta"])),
-                              DataCell(Text(item["dataHoraFimCompleta"])),
-                              DataCell(Text(item["valor_hora"].toString())),
-                              DataCell(
-                                  Text(item["horas_trabalhadas"].toString())),
-                              DataCell(Text("R\$ ${item["valor_receber"]}")),
-                            ]);
-                          }).toList(),
+                                DataCell(Text(item["dataHoraInicioCompleta"])),
+                                DataCell(Text(item["dataHoraFimCompleta"])),
+                                DataCell(Text(item["valor_hora"].toString())),
+                                DataCell(
+                                    Text(item["horas_trabalhadas"].toString())),
+                                DataCell(Text("R\$ ${item["valor_receber"]}")),
+                              ]);
+                            }).toList(),
+                          ),
                         ),
                       ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
         ],
