@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
-import 'package:matheus/screens/PegaData.dart';
+import 'package:matheus/screens/EdiarRegistro.dart';
+import 'package:matheus/widgets/PegaData.dart';
 import 'package:matheus/services/banco.dart';
 import 'package:matheus/services/helper.dart';
 import 'package:matheus/widgets/FutureDrop.dart';
@@ -59,6 +59,17 @@ class _HomeState extends State<Home> {
     dataFinal = DateFormat("yyyy-MM-dd").format(ultimoDia);
 
     super.initState();
+  }
+
+  void navegarEdicao(registro) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => EditarRegistro(
+          registros: registro,
+        ),
+      ),
+    );
   }
 
   @override
@@ -173,19 +184,31 @@ class _HomeState extends State<Home> {
                         scrollDirection: Axis.horizontal,
                         child: DataTable(
                           dataRowHeight: 80,
-                          columns: const [
-                            DataColumn(label: Text("Projet")),
-                            DataColumn(label: Text("Cliente")),
-                            DataColumn(label: Text("Tarefa")),
-                            DataColumn(label: Text("Descrição")),
-                            DataColumn(label: Text("Data Abertura")),
-                            DataColumn(label: Text("Data Conclusão")),
-                            DataColumn(label: Text("Valor Hora")),
-                            DataColumn(label: Text("Horas Trabalhadas")),
-                            DataColumn(label: Text("Valor Cobrar")),
+                          columns: [
+                            DataColumn(
+                              label: const Text("Ações"),
+                              onSort: (columnIndex, ascending) {
+                                print(columnIndex);
+                                print(ascending);
+                              },
+                            ),
+                            const DataColumn(label: Text("Projet")),
+                            const DataColumn(label: Text("Cliente")),
+                            const DataColumn(label: Text("Tarefa")),
+                            const DataColumn(label: Text("Descrição")),
+                            const DataColumn(label: Text("Data Abertura")),
+                            const DataColumn(label: Text("Data Conclusão")),
+                            const DataColumn(label: Text("Valor Hora")),
+                            const DataColumn(label: Text("Horas Trabalhadas")),
+                            const DataColumn(label: Text("Valor Cobrar")),
                           ],
                           rows: data.map<DataRow>((item) {
                             return DataRow(cells: [
+                              DataCell(
+                                const Text("Editar"),
+                                showEditIcon: true,
+                                onTap: () => navegarEdicao(item),
+                              ),
                               DataCell(Text(item["projetoNome"])),
                               DataCell(Text(item["clienteNome"])),
                               DataCell(Text(item["tarefaNome"])),
@@ -202,8 +225,8 @@ class _HomeState extends State<Home> {
                                   ),
                                 ),
                               ),
-                              DataCell(Text(item["dataHoraInicio"])),
-                              DataCell(Text(item["dataHoraFim"])),
+                              DataCell(Text(item["dataHoraInicioCompleta"])),
+                              DataCell(Text(item["dataHoraFimCompleta"])),
                               DataCell(Text(item["valor_hora"].toString())),
                               DataCell(
                                   Text(item["horas_trabalhadas"].toString())),
