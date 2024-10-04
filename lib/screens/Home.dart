@@ -155,6 +155,9 @@ class _HomeState extends State<Home> {
                   ),
                 ),
                 IconButton(
+                  style: const ButtonStyle(
+                    iconSize: WidgetStatePropertyAll(40)
+                  ),
                   onPressed: () => setState(() {}),
                   icon: const Icon(Icons.search),
                 ),
@@ -165,7 +168,7 @@ class _HomeState extends State<Home> {
             child: Container(
               margin: const EdgeInsets.fromLTRB(4, 0, 4, 4),
               decoration: BoxDecoration(
-                border: Border.all(),
+                border: Border.all(color: Colors.grey, width: 1),
                 borderRadius: BorderRadius.circular(5),
               ),
               child: FutureBuilder(
