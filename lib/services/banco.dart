@@ -7,7 +7,8 @@ Future<Database?> iniciarBanco() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
     String caminho = await databaseFactory.getDatabasesPath();
-    Database db = await databaseFactory.openDatabase("$caminho/registroHoras.db");
+    Database db =
+        await databaseFactory.openDatabase("$caminho/registroHoras.db");
     // Verificar se a tabela 'projetos' existe
     await db.execute('''
           CREATE TABLE IF NOT EXISTS projetos (
@@ -83,12 +84,17 @@ Future<bool> registrarProjeto(String projetoName) async {
   }
 }
 
-Future<bool> apagarProjeto(String id) async {
+Future<bool> atualizarProjeto(String id, String novoNome) async {
   Database? db = await iniciarBanco();
   if (db == null) return false;
 
   try {
-    await db.delete('projetos', where: "id = ?", whereArgs: [id]);
+    await db.update(
+      'projetos',
+      {"projetoNome": novoNome},
+      where: "id = ?",
+      whereArgs: [id],
+    );
     await db.close();
     return true;
   } catch (e) {
@@ -113,12 +119,17 @@ Future<bool> registrarCliente(String projetoCliente) async {
   }
 }
 
-Future<bool> apagarCliente(String id) async {
+Future<bool> atualizarCliente(String id, String nomeCliente) async {
   Database? db = await iniciarBanco();
   if (db == null) return false;
 
   try {
-    await db.delete('clientes', where: "id = ?", whereArgs: [id]);
+    await db.update(
+      'clientes',
+      {"clienteNome": nomeCliente},
+      where: "id = ?",
+      whereArgs: [id],
+    );
     await db.close();
     return true;
   } catch (e) {
@@ -143,12 +154,17 @@ Future<bool> registrarTarefa(String tarefaNome) async {
   }
 }
 
-Future<bool> apagarTarefa(String id) async {
+Future<bool> atualizarTarefa(String id, nomeTarefa) async {
   Database? db = await iniciarBanco();
   if (db == null) return false;
 
   try {
-    await db.delete('tarefas', where: "id = ?", whereArgs: [id]);
+    await db.update(
+      'tarefas',
+      {"tarefaNome": nomeTarefa},
+      where: "id = ?",
+      whereArgs: [id],
+    );
     await db.close();
     return true;
   } catch (e) {

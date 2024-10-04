@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:matheus/services/banco.dart';
 import 'package:matheus/services/helper.dart';
 import 'package:matheus/widgets/myAppBar.dart';
@@ -11,7 +12,7 @@ class Registros extends StatefulWidget {
   final String label;
   final String hintText;
 
-  final Function funcaoApagar;
+  final Function funcaoAtualizar;
   final List<String>? nomesColuna;
   final String tabelaBusca;
   const Registros({
@@ -21,7 +22,7 @@ class Registros extends StatefulWidget {
     required this.tituloAppBar,
     this.label = "",
     this.hintText = "",
-    required this.funcaoApagar,
+    required this.funcaoAtualizar,
     required this.nomesColuna,
     required this.tabelaBusca,
   });
@@ -32,7 +33,9 @@ class Registros extends StatefulWidget {
 
 class _RegistrosState extends State<Registros> {
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  final GlobalKey<FormState> formEditKey = GlobalKey<FormState>();
   final TextEditingController registroC = TextEditingController();
+  final TextEditingController editeC = TextEditingController();
 
   late Function funcao;
   late String nomeTitulo;
@@ -40,7 +43,7 @@ class _RegistrosState extends State<Registros> {
   late String label;
   late String hintText;
 
-  late Function funcaoApagar;
+  late Function funcaoAtualizar;
   late List<String>? nomesColuna;
   late String tabelaBusca;
   @override
@@ -50,7 +53,7 @@ class _RegistrosState extends State<Registros> {
     qualRegistro = widget.qualRegistro;
     label = widget.label;
     hintText = widget.hintText;
-    funcaoApagar = widget.funcaoApagar;
+    funcaoAtualizar = widget.funcaoAtualizar;
     nomesColuna = widget.nomesColuna;
     tabelaBusca = widget.tabelaBusca;
     super.initState();
@@ -59,12 +62,14 @@ class _RegistrosState extends State<Registros> {
   @override
   void dispose() {
     registroC.dispose();
+    editeC.dispose();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     void abrirConfirmacao(Map<String, dynamic> item) {
+      editeC.text = item[nomesColuna![0]];
       showModalBottomSheet(
         context: context,
         shape: const RoundedRectangleBorder(
@@ -90,6 +95,23 @@ class _RegistrosState extends State<Registros> {
                 const Text(
                   "Você tem certeza que deseja realizar esta ação?",
                 ),
+                Form(
+                  key: formEditKey,
+                  child: TextFormField(
+                    controller: editeC,
+                    decoration: InputDecoration(
+                      label: Text(label),
+                      hintText: hintText,
+                      border: const OutlineInputBorder(),
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return "Informe o registro.";
+                      }
+                      return null;
+                    },
+                  ),
+                ),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -103,7 +125,9 @@ class _RegistrosState extends State<Registros> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        funcaoApagar(item["id"].toString()).then((bool bul) {
+                        if (!formEditKey.currentState!.validate()) return;
+                        funcaoAtualizar(item["id"].toString(), editeC.text)
+                            .then((bool bul) {
                           if (bul) setState(() {});
                           Navigator.of(context).pop(); // Fecha o modal
                         });
@@ -125,7 +149,7 @@ class _RegistrosState extends State<Registros> {
       body: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
         children: [
-          // TABELA PARA LISTAR E APAGAR REGISTRO
+          // TABELA PARA LISTAR E ATUALZIAR REGISTRO
           SingleChildScrollView(
             scrollDirection: Axis.vertical,
             child: SingleChildScrollView(
@@ -153,10 +177,13 @@ class _RegistrosState extends State<Registros> {
                     rows: data.map<DataRow>((Map<String, dynamic> item) {
                       return DataRow(cells: [
                         DataCell(Text(item[nomesColuna![0]])),
-                        DataCell(TextButton(
-                          onPressed: () => abrirConfirmacao(item),
-                          child: const Icon(Icons.close),
-                        )),
+                        DataCell(
+                          FaIcon(
+                            FontAwesomeIcons.pen,
+                            color: Theme.of(context).colorScheme.primary,
+                          ),
+                          onTap: () => abrirConfirmacao(item),
+                        ),
                       ]);
                     }).toList(),
                   );
