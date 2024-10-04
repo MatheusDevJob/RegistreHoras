@@ -73,6 +73,62 @@ class _HomeState extends State<Home> {
     );
   }
 
+  Future<int> apagarRegistro(int id) async {
+    return await delete("registros", onde: "id = ?", argumento: [id]);
+  }
+
+  void abrirConfirmacao(Map<String, dynamic> item) {
+    showModalBottomSheet(
+      context: context,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(20),
+        ),
+      ),
+      isDismissible: false,
+      builder: (BuildContext context) {
+        return Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: <Widget>[
+              const Text(
+                "Você tem certeza que deseja apagar o registro? NÃO HÁ VOLTA!!!",
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              Text(item["descricao_tarefa"]),
+              const SizedBox(height: 20),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  TextButton(
+                    onPressed: () => Navigator.of(context).pop(),
+                    child: const Text(
+                      "Cancelar",
+                      style: TextStyle(color: Colors.red),
+                    ),
+                  ),
+                  ElevatedButton(
+                    onPressed: () {
+                      apagarRegistro(item["id"]).then((int num) {
+                        if (num > 0) setState(() {});
+                        Navigator.of(context).pop(); // Fecha o modal
+                      });
+                    },
+                    child: const Text("Confirmar"),
+                  ),
+                ],
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -216,6 +272,7 @@ class _HomeState extends State<Home> {
                                 DataCell(
                                   const FaIcon(FontAwesomeIcons.pen),
                                   onTap: () => navegarEdicao(item),
+                                  onLongPress: () => abrirConfirmacao(item),
                                 ),
                                 DataCell(Text(item["projetoNome"])),
                                 DataCell(Text(item["clienteNome"])),

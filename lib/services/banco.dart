@@ -347,3 +347,13 @@ Future<int> update(String tabela, Map<String, dynamic> dados,
     return 0;
   }
 }
+
+Future<int> delete(String tabela, {String? onde, List? argumento}) async {
+  Database? db = await iniciarBanco();
+  if (db == null) return 0;
+  try {
+    return db.delete(tabela, where: onde, whereArgs: argumento);
+  } catch (e) {
+    return 0;
+  }
+}
