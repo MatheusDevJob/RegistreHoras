@@ -114,3 +114,10 @@ Future<String> gerarPlanilha(List lista) async {
 
   return "Arquivo Excel gerado em: $tempPath";
 }
+
+TimeOfDay? stringToTimeOfDay(String horaString) {
+  print(horaString);
+  List<String> partes = horaString.split(":");
+  print(partes);
+  return TimeOfDay(hour: int.parse(partes[0]), minute: int.parse(partes[1]));
+}

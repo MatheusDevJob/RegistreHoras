@@ -3,6 +3,7 @@ import 'package:matheus/services/banco.dart';
 
 class FutureDrop extends StatefulWidget {
   final Function onChange;
+  final String? selecionado;
   final String? nomeColuna;
   final String tabelaBusca;
   final String hintText;
@@ -12,6 +13,7 @@ class FutureDrop extends StatefulWidget {
     required this.nomeColuna,
     required this.tabelaBusca,
     this.hintText = "Selecione uma opção",
+    this.selecionado 
   });
 
   @override
@@ -19,13 +21,14 @@ class FutureDrop extends StatefulWidget {
 }
 
 class _FutureDropState extends State<FutureDrop> {
-  String? selecionado;
+  late String? selecionado;
   late Function funcaoOnChange;
   late String? nomeColuna;
   late String tabelaBusca;
   late String? hintText;
   @override
   void initState() {
+    selecionado = widget.selecionado;
     funcaoOnChange = widget.onChange;
     nomeColuna = widget.nomeColuna;
     tabelaBusca = widget.tabelaBusca;

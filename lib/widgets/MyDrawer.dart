@@ -3,6 +3,7 @@ import 'package:matheus/screens/Home.dart';
 import 'package:matheus/screens/Registros.dart';
 import 'package:matheus/screens/registrarHoras.dart';
 import 'package:matheus/services/banco.dart';
+import 'package:matheus/widgets/BotaoRotate.dart';
 
 class MyDrawer extends StatefulWidget {
   const MyDrawer({super.key});
