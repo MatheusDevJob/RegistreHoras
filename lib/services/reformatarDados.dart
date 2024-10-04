@@ -98,7 +98,7 @@ Map<String, dynamic> calcularHorasEValor(
 
   return {
     'status': true,
-    'horasTrabalhadas': '$horas:$minutos',
+    'horasTrabalhadas': '${horas.toString().padLeft(2, '0')}:${minutos.toString().padLeft(2, '0')}',
     'valorReceber': valorReceber,
   };
 }

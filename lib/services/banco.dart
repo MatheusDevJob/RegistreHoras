@@ -19,12 +19,6 @@ Future<File> get banco async {
   return File('$caminho/banco_horas.txt');
 }
 
-Future<File> registrar(String data, String hora) async {
-  final file = await banco;
-  String registro = "$data $hora;\n";
-  return file.writeAsString(registro, mode: FileMode.append);
-}
-
 Future<String> buscar() async {
   try {
     final file = await banco;
@@ -232,6 +226,8 @@ Future getRegistrosTabela({
           registros.projetoID,
           registros.clienteID,
           registros.tarefaID,
+          strftime('%Y-%m-%d', data_hora_inicio) AS dataUSAInicio,
+          strftime('%Y-%m-%d', data_hora_fim) AS dataUSAFim,
           strftime('%d/%m/%Y', data_hora_inicio) AS dataHoraInicio,
           strftime('%d/%m/%Y', data_hora_fim) AS dataHoraFim,
           strftime('%d/%m/%Y %H:%M:%S', data_hora_inicio) AS dataHoraInicioCompleta,
@@ -352,6 +348,19 @@ Future<int> atualizarAtividade(
     };
     return db
         .update("registros", dados, where: "id = ?", whereArgs: [atividadeID]);
+  } catch (e) {
+    return 0;
+  }
+}
+
+// funções de uso geral
+
+Future<int> update(String tabela, Map<String, dynamic> dados,
+    {String? onde, List<String>? argumento}) async {
+  Database? db = await iniciarBanco();
+  if (db == null) return 0;
+  try {
+    return db.update(tabela, dados, where: onde, whereArgs: argumento);
   } catch (e) {
     return 0;
   }

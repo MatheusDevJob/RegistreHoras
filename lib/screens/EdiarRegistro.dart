@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:matheus/screens/Home.dart';
+import 'package:matheus/services/banco.dart';
+import 'package:matheus/services/helper.dart';
+import 'package:matheus/services/reformatarDados.dart';
 import 'package:matheus/widgets/FutureDrop.dart';
 import 'package:matheus/widgets/MyDrawer.dart';
 import 'package:matheus/widgets/PegaData.dart';
@@ -45,8 +49,8 @@ class _EditarRegistroState extends State<EditarRegistro> {
     horasFechamento = registros["horaFim"];
     dataInicio = DateTime.parse(registros["data_hora_inicio"]);
     dataFinal = DateTime.parse(registros["data_hora_fim"]);
-    dataAbertura = registros["dataHoraInicio"];
-    dataFechamento = registros["dataHoraFim"];
+    dataAbertura = registros["dataUSAInicio"];
+    dataFechamento = registros["dataUSAFim"];
     super.initState();
   }
 
@@ -59,8 +63,51 @@ class _EditarRegistroState extends State<EditarRegistro> {
   void selecionarProjeto(String idProjeto) => projetoID = idProjeto;
   void selecionarCliente(String idCliente) => clienteID = idCliente;
   void selecionarTarefa(String idTarefa) => tarefaID = idTarefa;
-  Future? _atualizarAtividade() async {
-    print(registros);
+  Future _atualizarAtividade() async {
+    String horaI = "$dataAbertura $horasAbertura";
+    String horaF = "$dataFechamento $horasFechamento";
+    Map<String, dynamic> calculo = calcularHorasEValor(
+      horaI,
+      horaF,
+      double.parse(valorHoraC.text),
+    );
+
+    if (!calculo["status"]) {
+      alertDialog(context, calculo["msg"], duracao: 30);
+      return;
+    }
+    Map<String, dynamic> dados = {
+      'projetoID': projetoID,
+      'clienteID': clienteID,
+      'tarefaID': tarefaID,
+      'descricao_tarefa': registroC.text,
+      'valor_hora': valorHoraC.text,
+      'data_hora_inicio': horaI,
+      'data_hora_fim': horaF,
+      'horas_trabalhadas': calculo["horasTrabalhadas"],
+      'valor_receber': calculo["valorReceber"].toStringAsFixed(2),
+    };
+
+    int resposta = await update(
+      "registros",
+      dados,
+      onde: "id = ?",
+      argumento: [registros["id"].toString()],
+    );
+
+    tratarResposta(resposta);
+  }
+
+  tratarResposta(int resposta) {
+    if (resposta == 1) {
+      alertDialog(context, "Atualizado");
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const Home()),
+      );
+    } else {
+      alertDialog(context, "Erro ao atualizar");
+    }
   }
 
   @override
@@ -173,8 +220,8 @@ class _EditarRegistroState extends State<EditarRegistro> {
                         children: [
                           PegaData(
                             retorno: getDataInicio,
-                            textoBotao: dataAbertura,
-                            textoInicialBotao: dataAbertura,
+                            textoBotao: registros["dataHoraInicio"],
+                            textoInicialBotao: registros["dataHoraInicio"],
                           ),
                           PegaHora(
                             retorno: getHoraInicio,
@@ -189,11 +236,11 @@ class _EditarRegistroState extends State<EditarRegistro> {
                         children: [
                           PegaData(
                             retorno: getDataFim,
-                            textoBotao: dataFechamento,
-                            textoInicialBotao: dataFechamento,
+                            textoBotao: registros["dataHoraFim"],
+                            textoInicialBotao: registros["dataHoraFim"],
                           ),
                           PegaHora(
-                            retorno: getHoraInicio,
+                            retorno: getHoraFim,
                             textoBotao: horasFechamento,
                             textoInicialBotao: horasFechamento,
                             horaAtual: TimeOfDay.fromDateTime(dataFinal),
