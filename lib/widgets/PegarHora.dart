@@ -2579,8 +2579,8 @@ class _PegarHoraState extends State<PegarHora> with RestorationMixin {
         ? _TimePickerDefaultsM3(context)
         : _TimePickerDefaultsM2(context);
     final ShapeBorder shape = pickerTheme.shape ?? defaultTheme.shape;
-    final Color entryModeIconColor =
-        pickerTheme.entryModeIconColor ?? defaultTheme.entryModeIconColor;
+    // final Color entryModeIconColor =
+    //     pickerTheme.entryModeIconColor ?? defaultTheme.entryModeIconColor;
     final MaterialLocalizations localizations =
         MaterialLocalizations.of(context);
 
