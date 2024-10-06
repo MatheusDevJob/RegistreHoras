@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:matheus/services/banco.dart';
 import 'package:matheus/services/helper.dart';
+import 'package:matheus/widgets/FutureDrop.dart';
 import 'package:matheus/widgets/myAppBar.dart';
 import 'package:matheus/widgets/myDrawer.dart';
 
@@ -15,6 +16,7 @@ class Registros extends StatefulWidget {
   final Function funcaoAtualizar;
   final List<String>? nomesColuna;
   final String tabelaBusca;
+  final bool addCliente;
   const Registros({
     super.key,
     required this.funcao,
@@ -22,6 +24,7 @@ class Registros extends StatefulWidget {
     required this.tituloAppBar,
     this.label = "",
     this.hintText = "",
+    this.addCliente = false,
     required this.funcaoAtualizar,
     required this.nomesColuna,
     required this.tabelaBusca,
@@ -46,6 +49,9 @@ class _RegistrosState extends State<Registros> {
   late Function funcaoAtualizar;
   late List<String>? nomesColuna;
   late String tabelaBusca;
+  late bool addCliente;
+
+  String? clienteID;
   @override
   void initState() {
     funcao = widget.funcao;
@@ -56,6 +62,7 @@ class _RegistrosState extends State<Registros> {
     funcaoAtualizar = widget.funcaoAtualizar;
     nomesColuna = widget.nomesColuna;
     tabelaBusca = widget.tabelaBusca;
+    addCliente = widget.addCliente;
     super.initState();
   }
 
@@ -143,6 +150,8 @@ class _RegistrosState extends State<Registros> {
       );
     }
 
+    void selecionarCliente(String idCliente) => clienteID = idCliente;
+
     return Scaffold(
       appBar: MyAppBar(titulo: nomeTitulo),
       drawer: const MyDrawer(),
@@ -196,63 +205,79 @@ class _RegistrosState extends State<Registros> {
             children: [
               Form(
                 key: formKey,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
                   children: [
-                    SizedBox(
-                      width: 500,
-                      // height: 60,
-                      child: TextFormField(
-                        controller: registroC,
-                        autofocus: true,
-                        decoration: InputDecoration(
-                          label: Text(label),
-                          hintText: hintText,
-                          border: const OutlineInputBorder(),
+                    if (addCliente)
+                      Container(
+                        margin: const EdgeInsets.only(bottom: 5),
+                        width: 552,
+                        child: FutureDrop(
+                          onChange: selecionarCliente,
+                          tabelaBusca: "clientes",
+                          nomeColuna: "clienteNome",
+                          hintText: "Cliente",
                         ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return "Informe o registro.";
-                          }
-                          return null;
-                        },
                       ),
-                    ),
-                    InkWell(
-                      child: Container(
-                        margin: const EdgeInsets.only(left: 5),
-                        padding: const EdgeInsets.all(11),
-                        decoration: BoxDecoration(
-                          borderRadius:
-                              const BorderRadius.all(Radius.elliptical(3, 3)),
-                          border: Border.all(color: Colors.grey),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        SizedBox(
+                          width: 500,
+                          // height: 60,
+                          child: TextFormField(
+                            controller: registroC,
+                            autofocus: true,
+                            decoration: InputDecoration(
+                              label: Text(label),
+                              hintText: hintText,
+                              border: const OutlineInputBorder(),
+                            ),
+                            validator: (value) {
+                              if (value == null || value.isEmpty) {
+                                return "Informe o registro.";
+                              }
+                              return null;
+                            },
+                          ),
                         ),
-                        child: const Icon(Icons.check),
-                      ),
-                      onTap: () {
-                        if (formKey.currentState!.validate()) {
-                          funcao(registroC.text).then((value) {
-                            if (value) {
-                              alertDialog(
-                                context,
-                                "Registrado",
-                                corCaixa: Colors.black,
-                                corTexto: Colors.white,
-                              );
-                              registroC.text = '';
-                              setState(() {});
-                            } else {
-                              alertDialog(
-                                context,
-                                "Não foi registrado",
-                                corCaixa: Colors.red,
-                                corTexto: Colors.white,
-                              );
+                        InkWell(
+                          child: Container(
+                            margin: const EdgeInsets.only(left: 5),
+                            padding: const EdgeInsets.all(11),
+                            decoration: BoxDecoration(
+                              borderRadius: const BorderRadius.all(
+                                  Radius.elliptical(3, 3)),
+                              border: Border.all(color: Colors.grey),
+                            ),
+                            child: const Icon(Icons.check),
+                          ),
+                          onTap: () {
+                            if (formKey.currentState!.validate()) {
+                              funcao(registroC.text, clienteID).then((value) {
+                                if (value) {
+                                  alertDialog(
+                                    context,
+                                    "Registrado",
+                                    corCaixa: Colors.black,
+                                    corTexto: Colors.white,
+                                  );
+                                  registroC.text = '';
+                                  setState(() {});
+                                } else {
+                                  alertDialog(
+                                    context,
+                                    "Não foi registrado",
+                                    corCaixa: Colors.red,
+                                    corTexto: Colors.white,
+                                  );
+                                }
+                              });
                             }
-                          });
-                        }
-                      },
-                    )
+                          },
+                        )
+                      ],
+                    ),
                   ],
                 ),
               ),

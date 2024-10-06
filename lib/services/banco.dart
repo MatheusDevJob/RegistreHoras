@@ -14,6 +14,7 @@ Future<Database?> iniciarBanco() async {
           CREATE TABLE IF NOT EXISTS projetos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             projetoNome TEXT NOT NULL UNIQUE,
+            clienteID INTEGER NOT NULL,
             data_hora TEXT NOT NULL
           );
         ''');
@@ -67,13 +68,14 @@ Future<Database?> iniciarBanco() async {
 
 void fecharBanco(Database db) async => await db.close();
 
-Future<bool> registrarProjeto(String projetoName) async {
+Future<bool> registrarProjeto(String projetoName, String clienteID) async {
   Database? db = await iniciarBanco();
   if (db == null) return false;
 
   try {
     Map<String, String> dados = {
       'projetoNome': projetoName,
+      'clienteID': clienteID,
       'data_hora': getDataHora(),
     };
     await db.insert('projetos', dados);

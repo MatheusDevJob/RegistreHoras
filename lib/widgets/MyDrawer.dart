@@ -63,6 +63,7 @@ class _MyDrawerState extends State<MyDrawer> {
                   funcaoAtualizar: atualizarProjeto,
                   nomesColuna: ["projetoNome"],
                   tabelaBusca: "projetos",
+                  addCliente: true,
                 ),
               ),
             ),
