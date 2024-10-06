@@ -13,7 +13,7 @@ class FutureDrop extends StatefulWidget {
     required this.nomeColuna,
     required this.tabelaBusca,
     this.hintText = "Selecione uma opção",
-    this.selecionado 
+    this.selecionado,
   });
 
   @override

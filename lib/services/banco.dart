@@ -359,3 +359,14 @@ Future<int> delete(String tabela, {String? onde, List? argumento}) async {
     return 0;
   }
 }
+
+Future<List<Map<String, Object?>>> get(String tabela,
+    {String? onde, List? argumento}) async {
+  Database? db = await iniciarBanco();
+  if (db == null) return [];
+  try {
+    return db.query(tabela, where: onde, whereArgs: argumento);
+  } catch (e) {
+    return [];
+  }
+}

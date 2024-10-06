@@ -187,8 +187,8 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
                 const Row(
                   mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Text("Projetos:", style: TextStyle(fontSize: 18)),
                     Text("Cliente:", style: TextStyle(fontSize: 18)),
+                    Text("Projetos:", style: TextStyle(fontSize: 18)),
                     Text("Tarefas:", style: TextStyle(fontSize: 18)),
                   ],
                 ),
@@ -243,19 +243,11 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
                   )
                 ] else
                   Row(children: [
-                    Expanded(
-                      child: FutureDrop(
-                        onChange: selecionarProjeto,
-                        tabelaBusca: "projetos",
-                        nomeColuna: "projetoNome",
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: FutureDrop(
-                        onChange: selecionarCliente,
-                        tabelaBusca: "clientes",
-                        nomeColuna: "clienteNome",
+                    Flexible(
+                      flex: 2,
+                      child: ConjuntoFutureDrop(
+                        funcCliente: selecionarCliente,
+                        funcProjeto: selecionarProjeto,
                       ),
                     ),
                     const SizedBox(width: 10),
@@ -339,6 +331,129 @@ class _RegistrarHorasState extends State<RegistrarHoras> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class ConjuntoFutureDrop extends StatefulWidget {
+  final Function funcCliente;
+  final Function funcProjeto;
+  const ConjuntoFutureDrop({
+    super.key,
+    required this.funcCliente,
+    required this.funcProjeto,
+  });
+
+  @override
+  State<ConjuntoFutureDrop> createState() => _ConjuntoFutureDropState();
+}
+
+class _ConjuntoFutureDropState extends State<ConjuntoFutureDrop> {
+  String? projetoID;
+  String? clienteID;
+  String? selecionado;
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      children: [
+        Expanded(
+          child: FutureBuilder(
+            future: getDadosTabela("clientes"),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text("Erro: ${snapshot.error}");
+              } else if (!snapshot.hasData) {
+                return const Text("Nenhum dado disponível");
+              }
+              List<Map<String, dynamic>> antigaData = snapshot.data!;
+              List<Map<String, dynamic>> data = [];
+
+              data.add({'id': null, "clienteNome": "Cliente"});
+              for (var valor in antigaData) {
+                data.add(valor);
+              }
+              return DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+                hint: const Text("Cliente"),
+                value: clienteID,
+                onChanged: (newValue) {
+                  setState(() {
+                    clienteID = newValue.toString();
+                    selecionado = null;
+                    widget.funcCliente(newValue);
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value == "null" || value.isEmpty) {
+                    return "Informe o registro.";
+                  }
+                  return null;
+                },
+                items: data
+                    .map<DropdownMenuItem<String>>((Map<String, dynamic> item) {
+                  return DropdownMenuItem<String>(
+                    value: item['id'].toString(),
+                    child: Text(item["clienteNome"]),
+                  );
+                }).toList(),
+              );
+            },
+          ),
+        ),
+        const SizedBox(width: 10),
+        Expanded(
+          child: FutureBuilder(
+            future:
+                get("projetos", argumento: [clienteID], onde: "clienteID = ?"),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const CircularProgressIndicator();
+              } else if (snapshot.hasError) {
+                return Text("Erro: ${snapshot.error}");
+              } else if (!snapshot.hasData) {
+                return const Text("Nenhum dado disponível");
+              }
+              List<Map<String, dynamic>> antigaData = snapshot.data!;
+              List<Map<String, dynamic>> data = [];
+
+              data.add({'id': null, "projetoNome": "Projeto"});
+              for (var valor in antigaData) {
+                data.add(valor);
+              }
+              return DropdownButtonFormField<String>(
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                ),
+                hint: const Text("Projeto"),
+                value: selecionado,
+                onChanged: (newValue) {
+                  setState(() {
+                    selecionado = newValue.toString();
+                    widget.funcProjeto(newValue);
+                  });
+                },
+                validator: (value) {
+                  if (value == null || value == "null" || value.isEmpty) {
+                    return "Informe o registro.";
+                  }
+                  return null;
+                },
+                items: data
+                    .map<DropdownMenuItem<String>>((Map<String, dynamic> item) {
+                  return DropdownMenuItem<String>(
+                    value: item['id'].toString(),
+                    child: Text(item["projetoNome"]),
+                  );
+                }).toList(),
+              );
+            },
+          ),
+        ),
+      ],
     );
   }
 }
