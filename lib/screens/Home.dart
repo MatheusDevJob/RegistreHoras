@@ -270,7 +270,11 @@ class _HomeState extends State<Home> {
                             rows: data.map<DataRow>((item) {
                               return DataRow(cells: [
                                 DataCell(
-                                  const FaIcon(FontAwesomeIcons.pen),
+                                  FaIcon(
+                                    FontAwesomeIcons.pen,
+                                    color:
+                                        Theme.of(context).colorScheme.primary,
+                                  ),
                                   onTap: () => navegarEdicao(item),
                                   onLongPress: () => abrirConfirmacao(item),
                                 ),
