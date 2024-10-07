@@ -104,7 +104,7 @@ Future<bool> atualizarProjeto(String id, String novoNome) async {
   }
 }
 
-Future<bool> registrarCliente(String projetoCliente) async {
+Future<bool> registrarCliente(String projetoCliente, String? ignorar) async {
   Database? db = await iniciarBanco();
   if (db == null) return false;
 
@@ -139,7 +139,7 @@ Future<bool> atualizarCliente(String id, String nomeCliente) async {
   }
 }
 
-Future<bool> registrarTarefa(String tarefaNome) async {
+Future<bool> registrarTarefa(String tarefaNome, String? ignorar) async {
   Database? db = await iniciarBanco();
   if (db == null) return false;
 
