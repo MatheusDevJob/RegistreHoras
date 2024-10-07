@@ -13,8 +13,14 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Acompanhamento de Horas',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        primaryColor: Colors.deepPurple,
         useMaterial3: true,
+        brightness: Brightness.light,
+      ),
+      darkTheme: ThemeData(
+        primaryColor: Colors.deepPurple,
+        useMaterial3: true,
+        brightness: Brightness.dark,
       ),
       debugShowCheckedModeBanner: false,
       home: const Home(),
