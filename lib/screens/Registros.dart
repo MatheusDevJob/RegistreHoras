@@ -17,6 +17,8 @@ class Registros extends StatefulWidget {
   final List<String>? nomesColuna;
   final String tabelaBusca;
   final bool addCliente;
+
+  final Function funcaoDeletar;
   const Registros({
     super.key,
     required this.funcao,
@@ -28,6 +30,7 @@ class Registros extends StatefulWidget {
     required this.funcaoAtualizar,
     required this.nomesColuna,
     required this.tabelaBusca,
+    required this.funcaoDeletar,
   });
 
   @override
@@ -51,6 +54,8 @@ class _RegistrosState extends State<Registros> {
   late String tabelaBusca;
   late bool addCliente;
 
+  late Function funcaoDeletar;
+
   String? clienteID;
   @override
   void initState() {
@@ -63,6 +68,7 @@ class _RegistrosState extends State<Registros> {
     nomesColuna = widget.nomesColuna;
     tabelaBusca = widget.tabelaBusca;
     addCliente = widget.addCliente;
+    funcaoDeletar = widget.funcaoDeletar;
     super.initState();
   }
 
@@ -75,7 +81,7 @@ class _RegistrosState extends State<Registros> {
 
   @override
   Widget build(BuildContext context) {
-    void abrirConfirmacao(Map<String, dynamic> item) {
+    void abrirConfirmacao(Map<String, dynamic> item, int funcao) {
       editeC.text = item[nomesColuna![0]];
       showModalBottomSheet(
         context: context,
@@ -99,26 +105,25 @@ class _RegistrosState extends State<Registros> {
                   ),
                 ),
                 const SizedBox(height: 10),
-                const Text(
-                  "Você tem certeza que deseja realizar esta ação?",
-                ),
-                Form(
-                  key: formEditKey,
-                  child: TextFormField(
-                    controller: editeC,
-                    decoration: InputDecoration(
-                      label: Text(label),
-                      hintText: hintText,
-                      border: const OutlineInputBorder(),
+                const Text("Você tem certeza que deseja realizar esta ação?"),
+                if (funcao == 1)
+                  Form(
+                    key: formEditKey,
+                    child: TextFormField(
+                      controller: editeC,
+                      decoration: InputDecoration(
+                        label: Text(label),
+                        hintText: hintText,
+                        border: const OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return "Informe o registro.";
+                        }
+                        return null;
+                      },
                     ),
-                    validator: (value) {
-                      if (value == null || value.isEmpty) {
-                        return "Informe o registro.";
-                      }
-                      return null;
-                    },
                   ),
-                ),
                 const SizedBox(height: 20),
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -132,12 +137,25 @@ class _RegistrosState extends State<Registros> {
                     ),
                     ElevatedButton(
                       onPressed: () {
-                        if (!formEditKey.currentState!.validate()) return;
-                        funcaoAtualizar(item["id"].toString(), editeC.text)
-                            .then((bool bul) {
-                          if (bul) setState(() {});
-                          Navigator.of(context).pop(); // Fecha o modal
-                        });
+                        if (funcao == 1 &&
+                            !formEditKey.currentState!.validate()) return;
+                        if (funcao == 1) {
+                          funcaoAtualizar(item["id"].toString(), editeC.text)
+                              .then((bool bul) {
+                            if (bul) setState(() {});
+                            Navigator.of(context).pop(); // Fecha o modal
+                          });
+                        } else if (funcao == 2) {
+                          funcaoDeletar(
+                            tabelaBusca,
+                            {"status": item["status"] == 0 ? 1 : 0},
+                            onde: "id = ?",
+                            argumento: [item["id"].toString()],
+                          ).then((int bul) {
+                            if (bul == 1) setState(() {});
+                            Navigator.of(context).pop(); // Fecha o modal
+                          });
+                        }
                       },
                       child: const Text("Confirmar"),
                     ),
@@ -181,7 +199,8 @@ class _RegistrosState extends State<Registros> {
                     ),
                     columns: const [
                       DataColumn(label: Text('Nome')),
-                      DataColumn(label: Text('Ação')),
+                      DataColumn(label: Text('Editar')),
+                      DataColumn(label: Text('Desativar')),
                     ],
                     rows: data.map<DataRow>((Map<String, dynamic> item) {
                       return DataRow(cells: [
@@ -191,7 +210,11 @@ class _RegistrosState extends State<Registros> {
                             FontAwesomeIcons.pen,
                             color: Theme.of(context).colorScheme.primary,
                           ),
-                          onTap: () => abrirConfirmacao(item),
+                          onTap: () => abrirConfirmacao(item, 1),
+                        ),
+                        DataCell(
+                          Text(item["status"] == 0 ? "Ativar" : "Desativar"),
+                          onTap: () => abrirConfirmacao(item, 2),
                         ),
                       ]);
                     }).toList(),

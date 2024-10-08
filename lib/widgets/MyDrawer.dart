@@ -55,6 +55,7 @@ class _MyDrawerState extends State<MyDrawer> {
               context,
               MaterialPageRoute(
                 builder: (context) => const Registros(
+                  funcaoDeletar: update,
                   qualRegistro: "Projeto",
                   tituloAppBar: "Registro de Projeto",
                   funcao: registrarProjeto,
@@ -74,6 +75,7 @@ class _MyDrawerState extends State<MyDrawer> {
               context,
               MaterialPageRoute(
                 builder: (context) => const Registros(
+                  funcaoDeletar: update,
                   qualRegistro: "Cliente",
                   tituloAppBar: "Registro de Cliente",
                   funcao: registrarCliente,
@@ -92,6 +94,7 @@ class _MyDrawerState extends State<MyDrawer> {
               context,
               MaterialPageRoute(
                 builder: (context) => const Registros(
+                  funcaoDeletar: update,
                   qualRegistro: "Tarefa",
                   tituloAppBar: "Registro de Tarefa",
                   funcao: registrarTarefa,

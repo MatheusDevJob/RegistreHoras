@@ -7,15 +7,17 @@ Future<Database?> iniciarBanco() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
     String caminho = await databaseFactory.getDatabasesPath();
-    Database db =
-        await databaseFactory.openDatabase("$caminho/registroHoras.db");
+    Database db = await databaseFactory.openDatabase(
+        "C:/Users/mathe/Documents/GitHub/matheus/build/windows/x64/runner/Release/.dart_tool/sqflite_common_ffi/databases/registroHoras.db");
     // Verificar se a tabela 'projetos' existe
     await db.execute('''
           CREATE TABLE IF NOT EXISTS projetos (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             projetoNome TEXT NOT NULL UNIQUE,
             clienteID INTEGER NOT NULL,
-            data_hora TEXT NOT NULL
+            data_hora TEXT NOT NULL,
+            status INTEGER DEFAULT 1,
+            FOREIGN KEY(clienteID) REFERENCES clientes(id) ON DELETE CASCADE
           );
         ''');
 
@@ -24,7 +26,8 @@ Future<Database?> iniciarBanco() async {
           CREATE TABLE IF NOT EXISTS clientes (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             clienteNome TEXT NOT NULL UNIQUE,
-            data_hora TEXT NOT NULL
+            data_hora TEXT NOT NULL,
+            status INTEGER DEFAULT 1
           );
         ''');
 
@@ -33,7 +36,8 @@ Future<Database?> iniciarBanco() async {
           CREATE TABLE IF NOT EXISTS tarefas (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             tarefaNome TEXT NOT NULL,
-            data_hora TEXT NOT NULL
+            data_hora TEXT NOT NULL,
+            status INTEGER DEFAULT 1
           );
         ''');
 
@@ -54,9 +58,9 @@ Future<Database?> iniciarBanco() async {
                 valor_hora REAL NOT NULL,
                 horas_trabalhadas REAL,
                 valor_receber INTEGER,
-                FOREIGN KEY (projetoID) REFERENCES projetos (id),
-                FOREIGN KEY (clienteID) REFERENCES clientes (id),
-                FOREIGN KEY (tarefaID) REFERENCES tarefas (id)
+                FOREIGN KEY (projetoID) REFERENCES projetos (id) ON DELETE CASCADE,
+                FOREIGN KEY (clienteID) REFERENCES clientes (id) ON DELETE CASCADE,
+                FOREIGN KEY (tarefaID) REFERENCES tarefas (id) ON DELETE CASCADE
             );
         ''');
 
