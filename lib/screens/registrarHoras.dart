@@ -358,7 +358,7 @@ class _ConjuntoFutureDropState extends State<ConjuntoFutureDrop> {
       children: [
         Expanded(
           child: FutureBuilder(
-            future: getDadosTabela("clientes"),
+            future: get("clientes", onde: "status = ?", argumento: [1]),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();
@@ -407,8 +407,11 @@ class _ConjuntoFutureDropState extends State<ConjuntoFutureDrop> {
         const SizedBox(width: 10),
         Expanded(
           child: FutureBuilder(
-            future:
-                get("projetos", argumento: [clienteID], onde: "clienteID = ?"),
+            future: get(
+              "projetos",
+              argumento: [clienteID, 1],
+              onde: "clienteID = ? AND status = ?",
+            ),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const CircularProgressIndicator();

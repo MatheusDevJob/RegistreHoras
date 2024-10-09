@@ -39,7 +39,7 @@ class _FutureDropState extends State<FutureDrop> {
   @override
   Widget build(BuildContext context) {
     return FutureBuilder(
-      future: getDadosTabela(tabelaBusca),
+      future: get(tabelaBusca, onde: "status = ?", argumento: [1]),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const CircularProgressIndicator();
