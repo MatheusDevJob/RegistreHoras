@@ -7,8 +7,8 @@ Future<Database?> iniciarBanco() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
     String caminho = await databaseFactory.getDatabasesPath();
-    Database db = await databaseFactory.openDatabase(
-        "C:/Users/mathe/Documents/GitHub/matheus/build/windows/x64/runner/Release/.dart_tool/sqflite_common_ffi/databases/registroHoras.db");
+    Database db =
+        await databaseFactory.openDatabase("$caminho/registroHoras.db");
     // Verificar se a tabela 'projetos' existe
     await db.execute('''
           CREATE TABLE IF NOT EXISTS projetos (
