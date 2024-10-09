@@ -49,6 +49,7 @@ String getDataHora() {
 Future<String> gerarPlanilha(List lista) async {
   if (lista.isEmpty) return "Lista vazia.";
   var excel = Excel.createExcel();
+  String nomeTabela = "Valor Mensal";
 
   // Adiciona dados na primeira linha e coluna da planilha padrão
   excel['Sheet1'].cell(CellIndex.indexByString("A1")).value =
@@ -101,6 +102,7 @@ Future<String> gerarPlanilha(List lista) async {
   }
   excel['Sheet1'].cell(CellIndex.indexByString("J2")).value =
       TextCellValue("R\$: $total");
+  excel.rename('Sheet1', nomeTabela);
   String dataHora = getDataHora();
   dataHora = dataHora.replaceAll(":", "-");
 
