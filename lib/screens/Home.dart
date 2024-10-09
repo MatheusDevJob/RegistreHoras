@@ -192,19 +192,19 @@ class _HomeState extends State<Home> {
                 const SizedBox(width: 10),
                 Expanded(
                   child: FutureDrop(
-                    onChange: selecionarProjeto,
-                    tabelaBusca: "projetos",
-                    nomeColuna: "projetoNome",
-                    hintText: "Projeto",
+                    onChange: selecionarCliente,
+                    tabelaBusca: "clientes",
+                    nomeColuna: "clienteNome",
+                    hintText: "Cliente",
                   ),
                 ),
                 const SizedBox(width: 10),
                 Expanded(
                   child: FutureDrop(
-                    onChange: selecionarCliente,
-                    tabelaBusca: "clientes",
-                    nomeColuna: "clienteNome",
-                    hintText: "Cliente",
+                    onChange: selecionarProjeto,
+                    tabelaBusca: "projetos",
+                    nomeColuna: "projetoNome",
+                    hintText: "Projeto",
                   ),
                 ),
                 const SizedBox(width: 10),
