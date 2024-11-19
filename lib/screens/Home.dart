@@ -26,6 +26,19 @@ class _HomeState extends State<Home> {
   String? botaoDataInicial;
   String? botaoDataFinal;
 
+  // variáveis paginação
+  int page = 0;
+  int atualPage = 1;
+  int totalPage = 0;
+  bool avancar = true;
+  int? limit = 10;
+  final List<Map<String, dynamic>> items = [
+    {'id': 0, 'nome': 'Tudo'},
+    {'id': 10, 'nome': '10'},
+    {'id': 50, 'nome': '50'},
+    {'id': 100, 'nome': '100'},
+  ];
+
   Future<List> buscarRegistros() async {
     List lista = await getRegistrosTabela(
       dataInicio: dataInicio,
@@ -33,6 +46,8 @@ class _HomeState extends State<Home> {
       projetoID: projetoID,
       clienteID: clienteID,
       tarefaID: tarefaID,
+      limite: limit,
+      offset: page,
     );
     return lista;
   }
@@ -129,6 +144,30 @@ class _HomeState extends State<Home> {
     );
   }
 
+  voltarPagina() async {
+    if (page <= 0 || limit == 0) {
+      page = 0;
+      limit = 0;
+      alertDialog(context, "Não há mais dados.", corCaixa: Colors.white);
+      return;
+    }
+    atualPage--;
+    setState(() {
+      page -= limit!;
+    });
+  }
+
+  avancarPagina() async {
+    if (!avancar || limit == 0) {
+      alertDialog(context, "Não há mais dados.", corCaixa: Colors.white);
+      return;
+    }
+    atualPage++;
+    setState(() {
+      page += limit!;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -175,52 +214,101 @@ class _HomeState extends State<Home> {
             ),
             padding: const EdgeInsets.all(5),
             margin: const EdgeInsets.all(5),
-            child: Row(
+            child: Column(
               children: [
-                const Text("Filtro por Data: "),
-                PegaData(
-                  retorno: getDataInicio,
-                  textoBotao: "Data Inicial",
-                  textoInicialBotao: botaoDataInicial!,
+                Row(
+                  children: [
+                    const Text("Filtro por Data: "),
+                    PegaData(
+                      retorno: getDataInicio,
+                      textoBotao: "Data Inicial",
+                      textoInicialBotao: botaoDataInicial!,
+                    ),
+                    const Text(" até "),
+                    PegaData(
+                      retorno: getDataFim,
+                      textoBotao: "Data Final",
+                      textoInicialBotao: botaoDataFinal!,
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: FutureDrop(
+                        onChange: selecionarCliente,
+                        tabelaBusca: "clientes",
+                        nomeColuna: "clienteNome",
+                        hintText: "Cliente",
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: FutureDrop(
+                        onChange: selecionarProjeto,
+                        tabelaBusca: "projetos",
+                        nomeColuna: "projetoNome",
+                        hintText: "Projeto",
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: FutureDrop(
+                        onChange: selecionarTarefa,
+                        tabelaBusca: "tarefas",
+                        nomeColuna: "tarefaNome",
+                        hintText: "Tarefa",
+                      ),
+                    ),
+                    IconButton(
+                      style: const ButtonStyle(
+                          iconSize: WidgetStatePropertyAll(40)),
+                      onPressed: () => setState(() {}),
+                      icon: const Icon(Icons.search),
+                    ),
+                  ],
                 ),
-                const Text(" até "),
-                PegaData(
-                  retorno: getDataFim,
-                  textoBotao: "Data Final",
-                  textoInicialBotao: botaoDataFinal!,
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: FutureDrop(
-                    onChange: selecionarCliente,
-                    tabelaBusca: "clientes",
-                    nomeColuna: "clienteNome",
-                    hintText: "Cliente",
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: FutureDrop(
-                    onChange: selecionarProjeto,
-                    tabelaBusca: "projetos",
-                    nomeColuna: "projetoNome",
-                    hintText: "Projeto",
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: FutureDrop(
-                    onChange: selecionarTarefa,
-                    tabelaBusca: "tarefas",
-                    nomeColuna: "tarefaNome",
-                    hintText: "Tarefa",
-                  ),
-                ),
-                IconButton(
-                  style:
-                      const ButtonStyle(iconSize: WidgetStatePropertyAll(40)),
-                  onPressed: () => setState(() {}),
-                  icon: const Icon(Icons.search),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Row(
+                      children: [
+                        const Text("Quantidade por Página: "),
+                        SizedBox(
+                          width: 200,
+                          child: DropdownButtonFormField<int>(
+                            value: limit,
+                            hint: const Text("Limite Linhas"),
+                            decoration: InputDecoration(
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 10, vertical: 0),
+                            ),
+                            items: items.map((Map<String, dynamic> item) {
+                              return DropdownMenuItem<int>(
+                                value: item['id'],
+                                child: Text(item['nome']),
+                              );
+                            }).toList(),
+                            onChanged: (value) => setState(() => limit = value),
+                          ),
+                        ),
+                      ],
+                    ),
+                    Row(
+                      children: [
+                        const Text("PÁGINA: "),
+                        IconButton(
+                          onPressed: () => voltarPagina(),
+                          icon: const Icon(Icons.arrow_back),
+                        ),
+                        Text(atualPage.toString()),
+                        IconButton(
+                          onPressed: () => avancarPagina(),
+                          icon: const Icon(Icons.arrow_forward),
+                        ),
+                      ],
+                    )
+                  ],
                 ),
               ],
             ),
@@ -244,6 +332,7 @@ class _HomeState extends State<Home> {
                   }
                   List<dynamic> data = snapshot.data!;
 
+                  avancar = data.length < limit! ? false : true;
                   return Scrollbar(
                     interactive: false,
                     trackVisibility: true,

@@ -198,6 +198,8 @@ Future getRegistrosTabela({
   String? projetoID,
   String? clienteID,
   String? tarefaID,
+  int? limite,
+  int? offset,
 }) async {
   Database? db = await iniciarBanco();
   if (db == null) return [];
@@ -254,6 +256,11 @@ Future getRegistrosTabela({
       query += ' WHERE ${conditions.join(' AND ')}';
     }
     query += " ORDER BY registros.data_hora_inicio DESC";
+
+    if (limite != null && limite != 0) {
+      query += " LIMIT $limite OFFSET ${offset ?? 0}";
+    }
+
     List<Map<String, dynamic>> retorno = await db.rawQuery(query);
     return retorno;
   } catch (e) {
