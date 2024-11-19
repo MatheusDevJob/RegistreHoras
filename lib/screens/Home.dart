@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:intl/intl.dart';
 import 'package:matheus/screens/EdiarRegistro.dart';
+import 'package:matheus/screens/registrarHoras.dart';
 import 'package:matheus/services/reformatarDados.dart';
 import 'package:matheus/widgets/PegaData.dart';
 import 'package:matheus/services/banco.dart';
@@ -64,7 +65,11 @@ class _HomeState extends State<Home> {
   void getDataInicio(String? data) => dataInicio = data;
   void getDataFim(String? data) => dataFinal = data;
   void selecionarProjeto(String idProjeto) => projetoID = idProjeto;
-  void selecionarCliente(String idCliente) => clienteID = idCliente;
+  void selecionarCliente(String idCliente) {
+    clienteID = idCliente;
+    projetoID = null;
+  }
+
   void selecionarTarefa(String idTarefa) => tarefaID = idTarefa;
   DateTime now = DateTime.now();
 
@@ -235,21 +240,11 @@ class _HomeState extends State<Home> {
                       textoInicialBotao: botaoDataFinal!,
                     ),
                     const SizedBox(width: 10),
-                    Expanded(
-                      child: FutureDrop(
-                        onChange: selecionarCliente,
-                        tabelaBusca: "clientes",
-                        nomeColuna: "clienteNome",
-                        hintText: "Cliente",
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    Expanded(
-                      child: FutureDrop(
-                        onChange: selecionarProjeto,
-                        tabelaBusca: "projetos",
-                        nomeColuna: "projetoNome",
-                        hintText: "Projeto",
+                    Flexible(
+                      flex: 2,
+                      child: ConjuntoFutureDrop(
+                        funcCliente: selecionarCliente,
+                        funcProjeto: selecionarProjeto,
                       ),
                     ),
                     const SizedBox(width: 10),
