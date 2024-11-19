@@ -54,7 +54,11 @@ class _HomeState extends State<Home> {
 
   void buscarDadosPlanilha() async {
     List lista = await buscarRegistros();
-    gerarPlanilha(lista).then((value) => alertDialog(context, value));
+    gerarPlanilha(lista).then((value) => alertDialog(
+          context,
+          value,
+          corCaixa: Colors.white,
+        ));
   }
 
   void getDataInicio(String? data) => dataInicio = data;

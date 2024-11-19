@@ -109,7 +109,7 @@ Future<String> gerarPlanilha(List lista) async {
   // Gera um arquivo temporário para salvar o Excel
   Directory tempDir = await getApplicationDocumentsDirectory();
 
-  String tempPath = "${tempDir.path}/$dataHora.xlsx";
+  String tempPath = "${tempDir.path}\\$dataHora.xlsx";
   File(tempPath)
     ..createSync(recursive: true)
     ..writeAsBytesSync(excel.encode()!);
