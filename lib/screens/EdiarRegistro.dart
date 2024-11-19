@@ -128,27 +128,27 @@ class _EditarRegistroState extends State<EditarRegistro> {
               const Row(
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 children: [
-                  Text("Projetos:", style: TextStyle(fontSize: 18)),
                   Text("Cliente:", style: TextStyle(fontSize: 18)),
-                  Text("Tarefas:", style: TextStyle(fontSize: 18)),
+                  Text("Projeto:", style: TextStyle(fontSize: 18)),
+                  Text("Tarefa:", style: TextStyle(fontSize: 18)),
                 ],
               ),
               Row(children: [
-                Expanded(
-                  child: FutureDrop(
-                    onChange: selecionarProjeto,
-                    tabelaBusca: "projetos",
-                    nomeColuna: "projetoNome",
-                    selecionado: projetoID,
-                  ),
-                ),
-                const SizedBox(width: 10),
                 Expanded(
                   child: FutureDrop(
                     onChange: selecionarCliente,
                     tabelaBusca: "clientes",
                     nomeColuna: "clienteNome",
                     selecionado: clienteID,
+                  ),
+                ),
+                const SizedBox(width: 10),
+                Expanded(
+                  child: FutureDrop(
+                    onChange: selecionarProjeto,
+                    tabelaBusca: "projetos",
+                    nomeColuna: "projetoNome",
+                    selecionado: projetoID,
                   ),
                 ),
                 const SizedBox(width: 10),
