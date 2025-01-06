@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:matheus/screens/Home.dart';
 import 'package:matheus/screens/Registros.dart';
+import 'package:matheus/screens/energia/modulo_energia.dart';
 import 'package:matheus/screens/registrarHoras.dart';
 import 'package:matheus/services/banco.dart';
 
@@ -105,6 +106,13 @@ class _MyDrawerState extends State<MyDrawer> {
                   tabelaBusca: "tarefas",
                 ),
               ),
+            ),
+          ),
+          ListTile(
+            title: const Text("Módulo Energia"),
+            onTap: () => Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const ModuloEnergia()),
             ),
           ),
         ],

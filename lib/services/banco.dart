@@ -63,7 +63,21 @@ Future<Database?> iniciarBanco() async {
                 FOREIGN KEY (tarefaID) REFERENCES tarefas (id) ON DELETE CASCADE
             );
         ''');
-
+    await db.execute('''
+      -- Criar tabela para armazenar dados de consumo de energia
+      CREATE TABLE ConsumoEnergia (
+          id INTEGER PRIMARY KEY AUTOINCREMENT, -- Identificador único
+          data_referencia TEXT NOT NULL,        -- Data de referência (ex.: '2025-01')
+          kwh_consumidos REAL NOT NULL,         -- Quantidade total de kWh consumidos
+          preco_por_kwh REAL NOT NULL,          -- Preço unitário por kWh (R\$)
+          bandeira_tarifaria TEXT,              -- Bandeira tarifária (ex.: 'Verde', 'Amarela')
+          encargos_adicionais REAL,             -- Valores adicionais (ex.: bandeiras, iluminação pública)
+          pis_cofins REAL,                      -- Valor de PIS/COFINS
+          icms REAL,                            -- Valor de ICMS
+          custo_total REAL NOT NULL,            -- Valor total da fatura (R\$)
+          data_hora_registro TEXT NOT NULL
+      );
+    ''');
     return db;
   } catch (e) {
     return null;
