@@ -7,6 +7,7 @@ Future<Database?> iniciarBanco() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
     String caminho = await databaseFactory.getDatabasesPath();
+    print(caminho);
     Database db =
         await databaseFactory.openDatabase("$caminho/registroHoras.db");
     // Verificar se a tabela 'projetos' existe
@@ -75,6 +76,25 @@ Future<Database?> iniciarBanco() async {
           pis_cofins REAL,                      -- Valor de PIS/COFINS
           icms REAL,                            -- Valor de ICMS
           custo_total REAL NOT NULL,            -- Valor total da fatura (R\$)
+          data_hora_registro TEXT NOT NULL
+      );
+    ''');
+
+    await db.execute('''
+      CREATE TABLE gastos_mensais (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          descricao_gasto TEXT NOT NULL,
+          valor_gasto REAL NOT NULL,
+          forma_pagamento TEXT NOT NULL,
+          data_hora_registro TEXT NOT NULL
+      );
+    ''');
+
+    await db.execute('''
+      CREATE TABLE lucros_mensais (
+          id INTEGER PRIMARY KEY AUTOINCREMENT,
+          descricao_lucro TEXT NOT NULL,
+          valor_lucro REAL NOT NULL,
           data_hora_registro TEXT NOT NULL
       );
     ''');

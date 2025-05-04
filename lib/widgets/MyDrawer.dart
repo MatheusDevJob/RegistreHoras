@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:matheus/screens/Home.dart';
 import 'package:matheus/screens/Registros.dart';
 import 'package:matheus/screens/energia/modulo_energia.dart';
+import 'package:matheus/screens/financeiro/modulo_financeiro.dart';
 import 'package:matheus/screens/registrarHoras.dart';
 import 'package:matheus/services/banco.dart';
+import 'package:matheus/services/financeiro.dart';
 
 class MyDrawer extends StatefulWidget {
   const MyDrawer({super.key});
@@ -114,6 +116,18 @@ class _MyDrawerState extends State<MyDrawer> {
               context,
               MaterialPageRoute(builder: (context) => const ModuloEnergia()),
             ),
+          ),
+          ListTile(
+            title: const Text("Módulo Financeiro"),
+            onTap: () async {
+              Map priDados = await Financeiro().getDadosFinancas();
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => ModuloFinanceiro(priDados: priDados),
+                ),
+              );
+            },
           ),
         ],
       ),
