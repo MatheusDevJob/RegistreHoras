@@ -7,7 +7,6 @@ Future<Database?> iniciarBanco() async {
     sqfliteFfiInit();
     databaseFactory = databaseFactoryFfi;
     String caminho = await databaseFactory.getDatabasesPath();
-    print(caminho);
     Database db =
         await databaseFactory.openDatabase("$caminho/registroHoras.db");
     // Verificar se a tabela 'projetos' existe
@@ -66,7 +65,7 @@ Future<Database?> iniciarBanco() async {
         ''');
     await db.execute('''
       -- Criar tabela para armazenar dados de consumo de energia
-      CREATE TABLE ConsumoEnergia (
+      CREATE TABLE IF NOT EXISTS ConsumoEnergia (
           id INTEGER PRIMARY KEY AUTOINCREMENT, -- Identificador único
           data_referencia TEXT NOT NULL,        -- Data de referência (ex.: '2025-01')
           kwh_consumidos REAL NOT NULL,         -- Quantidade total de kWh consumidos
@@ -81,7 +80,7 @@ Future<Database?> iniciarBanco() async {
     ''');
 
     await db.execute('''
-      CREATE TABLE gastos_mensais (
+      CREATE TABLE IF NOT EXISTS gastos_mensais (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           descricao_gasto TEXT NOT NULL,
           valor_gasto REAL NOT NULL,
@@ -91,7 +90,7 @@ Future<Database?> iniciarBanco() async {
     ''');
 
     await db.execute('''
-      CREATE TABLE lucros_mensais (
+      CREATE TABLE IF NOT EXISTS lucros_mensais (
           id INTEGER PRIMARY KEY AUTOINCREMENT,
           descricao_lucro TEXT NOT NULL,
           valor_lucro REAL NOT NULL,

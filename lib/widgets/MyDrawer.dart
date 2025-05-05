@@ -6,6 +6,9 @@ import 'package:matheus/screens/financeiro/modulo_financeiro.dart';
 import 'package:matheus/screens/registrarHoras.dart';
 import 'package:matheus/services/banco.dart';
 import 'package:matheus/services/financeiro.dart';
+import 'package:matheus/services/helper.dart';
+import 'package:process_run/process_run.dart';
+import 'package:sqflite_common_ffi/sqflite_ffi.dart';
 
 class MyDrawer extends StatefulWidget {
   const MyDrawer({super.key});
@@ -51,6 +54,23 @@ class _MyDrawerState extends State<MyDrawer> {
           ListTile(
             title: const Text("Registrar Atividade"),
             onTap: () async => navegarRegistro(await getAtividadeAberta()),
+          ),
+          ListTile(
+            title: const Text("Abrir pasta DB"),
+            onTap: () async {
+              try {
+                String caminho = await databaseFactoryFfi.getDatabasesPath();
+                await runExecutableArguments('explorer', [caminho]);
+              } catch (e) {
+                alertDialog(
+                  // ignore: use_build_context_synchronously
+                  context,
+                  "Erro ao abrir pasta: $e",
+                  duracao: 5,
+                  corCaixa: Colors.white,
+                );
+              }
+            },
           ),
           ListTile(
             title: const Text("Cadastrar Projeto"),
